@@ -4,7 +4,7 @@ CC = gcc
 # Option de compilation
 CFLAGS = -std=c99 -Wpedantic -Wall -Wextra -Wconversion -Wwrite-strings -Werror -fstack-protector-all -fpie -D_FORTIFY_SOURCE=2 -O2 -D_XOPEN_SOURCE -g
 # Option d'édition de lien
-LDFLAGS= -Wl,-z,relro,-z,now -pie -pthread
+LDFLAGS= -Wl,-z,relro,-z,now -pie
 INCDIR=inc
 OBJDIR=obj
 BINDIR=bin
@@ -28,8 +28,8 @@ start_$(TR_MATRIX) : ./$(BINDIR)/$(TR_MATRIX)
 ./$(BINDIR)/$(TR_MATRIX) : ./$(OBJDIR)/$(TR_MATRIX).o
 	$(CC) -o ./$(BINDIR)/$(TR_MATRIX) ./$(OBJDIR)/$(TR_MATRIX).o $(LDFLAGS)
 # Compilation TR_MATRIX.c pour générer le fichier objet dans le dossier ./$(OBJDIR)
-./$(OBJDIR)/$(TR_MATRIX).o : ./$(SRCDIR)/$(TR_MATRIX).c
-	$(CC) -c ./$(SRCDIR)/$(TR_MATRIX).c $(CFLAGS) -I ./$(INCDIR) -o ./$(OBJDIR)/$(TR_MATRIX).o
+./$(OBJDIR)/$(TR_MATRIX).o : ./$(TR_MATRIX).c
+	$(CC) -c ./$(TR_MATRIX).c $(CFLAGS) -I ./$(INCDIR) -o ./$(OBJDIR)/$(TR_MATRIX).o
 
 #-------------------------------------------#
 # Lancement du démon : make hash_table_trie # 
@@ -41,8 +41,8 @@ start_$(H_TABLE) : ./$(BINDIR)/$(H_TABLE)
 ./$(BINDIR)/$(H_TABLE) : ./$(OBJDIR)/$(H_TABLE).o
 	$(CC) -o ./$(BINDIR)/$(H_TABLE) ./$(OBJDIR)/$(H_TABLE).o $(LDFLAGS)
 # Compilation hash_table_trie.c pour générer le fichier objet dans le dossier ./$(OBJDIR)
-./$(OBJDIR)/$(H_TABLE).o : ./$(SRCDIR)/$(H_TABLE).c
-	$(CC) -c ./$(SRCDIR)/$(H_TABLE).c $(CFLAGS) -I ./$(INCDIR) -o ./$(OBJDIR)/$(H_TABLE).o
+./$(OBJDIR)/$(H_TABLE).o : ./$(H_TABLE).c
+	$(CC) -c ./$(H_TABLE).c $(CFLAGS) -I ./$(INCDIR) -o ./$(OBJDIR)/$(H_TABLE).o
 
 #-----------#
 # Nettoyage #
