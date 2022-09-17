@@ -51,6 +51,7 @@ void insertInTrie(Trie trie, unsigned char *w) {
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
 			if (j == w[n]) {
 				trie->transition[i][j] = trie->nextNode++;
+				printf("%c==%c : %d\n", (char) j, w[n], trie->transition[i][j]);
 				break;
 			}
 		}
@@ -59,11 +60,12 @@ void insertInTrie(Trie trie, unsigned char *w) {
 		}
 		n++;
 	}
+	printf("n : %lu\n", n);
 	trie->finite[n] = '1';
 }
 	
 int isInTrie(Trie trie, unsigned char *w) {
-	int n = -1;
+	int n = 1; // 0 : root
 	int idx_w = 0;
 	for (int i = 0; i < trie->maxNode; i++) {
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
@@ -74,7 +76,7 @@ int isInTrie(Trie trie, unsigned char *w) {
 		}
 	}
 	printf("n : %d\n", n);
-	return n != -1 && trie->finite[n] == '1';
+	return n != 1 && trie->finite[n] == '1';
 }
 
 void freeTrie(Trie t) {
@@ -107,17 +109,19 @@ void printTransition(Trie trie) {
 }
 
 int main(void) {
-	int maxNode = 3;
+	int maxNode = 11;
 	Trie trie = createTrie(maxNode);
 	if (trie == NULL) {
 		return EXIT_FAILURE;
 	}
-	insertInTrie(trie, (unsigned char *) "atcg");
-	printTransition(trie);
-	if (isInTrie(trie, (unsigned char *) "tc")) {
-		printf("Word %s is in trie\n", "tc");
+	const char *str = "atcgjilh";
+	const char *substr = "atcgjilh";
+	insertInTrie(trie, (unsigned char *) str);
+	//printTransition(trie); 
+	if (isInTrie(trie, (unsigned char *) substr)) {
+		printf("Word %s is in %s trie\n", substr, str);
 	} else {
-		printf("Word %s isn't in trie\n", "tc");
+		printf("Word %s isn't in %s trie\n", substr, str);
 	}
 	freeTrie(trie);
 	return EXIT_SUCCESS;
