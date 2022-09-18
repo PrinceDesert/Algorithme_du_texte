@@ -34,28 +34,28 @@ Trie createTrie(int maxNode) {
 		}
 	}
 	// +1 : '\0'
-	size_t len_finite = (size_t) t->maxNode + 1;
-	t->finite = (char *) calloc(len_finite, sizeof(char));
+	size_t lenFinite = (size_t) t->maxNode + 1;
+	t->finite = (char *) calloc(lenFinite, sizeof(char));
 	if (t->finite == NULL) {
 		perror("calloc");
 		free(t->finite);
 		return NULL;
 	}
-	memset(t->finite, '0', len_finite);
+	memset(t->finite, '0', lenFinite);
 	return t;
 }
 	
 void insertInTrie(Trie trie, unsigned char *w) {
-	size_t idx_w = 0;
-	for (size_t i = 0; i < (size_t) trie->maxNode && w[idx_w] != '\0'; i++) {
+	size_t idxW = 0;
+	for (size_t i = 0; i < (size_t) trie->maxNode && w[idxW] != '\0'; i++) {
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
-			if (!trie->transition[i][j] && j == w[idx_w]) {
+			if (!trie->transition[i][j] && j == w[idxW]) {
 				trie->transition[i][j] = trie->nextNode++;
-				printf("%c==%c : transition[%lu][%lu]=%d\n", (char) j, w[idx_w], i, j, trie->transition[i][j]);
+				printf("%c==%c : transition[%lu][%lu]=%d\n", (char) j, w[idxW], i, j, trie->transition[i][j]);
 				break;
 			}
 		}
-		idx_w++;
+		idxW++;
 	}
 	trie->finite[trie->nextNode-1] = '1';
 	printf("finite :\n");
@@ -67,26 +67,24 @@ void insertInTrie(Trie trie, unsigned char *w) {
 	
 int isInTrie(Trie trie, unsigned char *w) {
 	int num_node = 0;
-	int idx_w = 0;
-	int last_idx_w = -1;
-	for (size_t i = 0; i < (size_t) trie->maxNode && w[idx_w] != '\0'; i++) {
+	int idxW = 0;
+	int lastIdxW = -1;
+	for (size_t i = 0; i < (size_t) trie->maxNode && w[idxW] != '\0'; i++) {
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
-			if (w[idx_w] == j) {
-				last_idx_w = idx_w;
-				printf("transition[%lu][%lu]=%d - %c : ", i, j, trie->transition[i][j], w[idx_w]);
+			if (w[idxW] == j) {
+				lastIdxW = idxW;
+				printf("transition[%lu][%lu]=%d - %c : ", i, j, trie->transition[i][j], w[idxW]);
 				if (trie->transition[i][j] != 0) {
 					num_node = trie->transition[i][j];
-					idx_w++;
-					printf("%d != %d", last_idx_w, idx_w);
-					break;
+					idxW++;
+					printf("%d != %d\n", lastIdxW, idxW);
 				}
 				printf("\n");
-				// break ici au lieu de en haut ?
+				break;
 			}
 		}
 		// Node not found
-		if (last_idx_w == idx_w) {
-			printf("NOT : %d - %d\n", last_idx_w, idx_w);
+		if (lastIdxW == idxW) {
 			return 0;
 		}
 	}
