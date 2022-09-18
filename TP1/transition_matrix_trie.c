@@ -47,45 +47,50 @@ Trie createTrie(int maxNode) {
 	
 void insertInTrie(Trie trie, unsigned char *w) {
 	size_t idx_w = 0;
-	for (size_t i = 0; i < (size_t) trie->maxNode; i++) {
+	for (size_t i = 0; i < (size_t) trie->maxNode && w[idx_w] != '\0'; i++) {
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
 			if (!trie->transition[i][j] && j == w[idx_w]) {
 				trie->transition[i][j] = trie->nextNode++;
-				printf("%c==%c : %d\n", (char) j, w[idx_w], trie->transition[i][j]);
+				printf("%c==%c : transition[%lu][%lu]=%d\n", (char) j, w[idx_w], i, j, trie->transition[i][j]);
 				break;
 			}
 		}
-		if (w[idx_w+1] == '\0') {
-			trie->finite[trie->nextNode-1] = '1';
-			printf("finite :\n");
-			for (size_t i = 0; i < (size_t) trie->maxNode + 1; i++) {
-				printf("%c|", trie->finite[i]);
-			}
-			printf("\n");
-			break;
-		}
 		idx_w++;
 	}
+	trie->finite[trie->nextNode-1] = '1';
+	printf("finite :\n");
+	for (size_t i = 0; i < (size_t) trie->maxNode + 1; i++) {
+		printf("%c|", trie->finite[i]);
+	}
+	printf("\n");
 }
 	
 int isInTrie(Trie trie, unsigned char *w) {
-	int idx_fnt = 0;
+	int num_node = 0;
 	int idx_w = 0;
-	int last_idx_w = idx_w;
-	for (size_t i = 0; i < (size_t) trie->maxNode; i++) {
+	int last_idx_w = -1;
+	for (size_t i = 0; i < (size_t) trie->maxNode && w[idx_w] != '\0'; i++) {
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
-			if (trie->transition[i][j] != 0 && w[idx_w] == j) {
-				idx_fnt = trie->transition[i][j];
+			if (w[idx_w] == j) {
 				last_idx_w = idx_w;
-				idx_w++;
+				printf("transition[%lu][%lu]=%d - %c : ", i, j, trie->transition[i][j], w[idx_w]);
+				if (trie->transition[i][j] != 0) {
+					num_node = trie->transition[i][j];
+					idx_w++;
+					printf("%d != %d", last_idx_w, idx_w);
+					break;
+				}
+				printf("\n");
+				// break ici au lieu de en haut ?
 			}
 		}
 		// Node not found
 		if (last_idx_w == idx_w) {
+			printf("NOT : %d - %d\n", last_idx_w, idx_w);
 			return 0;
 		}
 	}
-	return trie->finite[idx_fnt] == '1';
+	return trie->finite[num_node] == '1';
 }
 
 void freeTrie(Trie t) {
@@ -127,14 +132,16 @@ int main(void) {
 		return EXIT_FAILURE;
 	}
 	const char *words[] = {"atcg", "agv", NULL};
-	const char *substr = "ag";
+	const char *test_words[] = {"ag", "atcg", "gv", "atc", "av", "agv", NULL};
 	for (size_t i = 0; words[i] != NULL; i++)
 		insertInTrie(trie, (unsigned char *) words[i]);
-	printTransition(trie); 
-	if (isInTrie(trie, (unsigned char *) substr)) {
-		printf("Word %s is in trie\n", substr);
-	} else {
-		printf("Word %s isn't in trie\n", substr);
+	printTransition(trie);
+	for (size_t i = 0; test_words[i] != NULL; i++) {
+		if (isInTrie(trie, (unsigned char *) test_words[i])) {
+			printf("Word %s is in trie\n", test_words[i]);
+		} else {
+			printf("Word %s isn't in trie\n", test_words[i]);
+		}
 	}
 	freeTrie(trie);
 	return EXIT_SUCCESS;
