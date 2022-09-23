@@ -18,6 +18,7 @@ Trie createTrie(int maxNode) {
 	t->nextNode = 1;
 	t->transition = (List *) calloc((size_t) (maxNode) + 1, sizeof(int *));
 	// a chaque couple une fonction math qui génèe une clé
+	for (size_t i = 0; i < (size_t) t->maxNode; i++);
 	
 	// il peut avoir des conflits qui correspondent à 2 tables
 	return NULL;
@@ -33,6 +34,16 @@ int isInTrie(Trie trie, unsigned char *w) {
 	
 	
 	return 0;
+}
+
+void freeTrie(Trie t) {
+	if (t != NULL) {
+		for (size_t i = 0; i < (size_t) t->maxNode; i++) {
+			free(t->transition[i]);
+		}
+		free(t->transition);
+		free(t->finite);
+	}
 }
 	
 int main(void) {
