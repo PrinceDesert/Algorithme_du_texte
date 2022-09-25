@@ -6,6 +6,9 @@
 #include <transition_matrix_trie.h>
 
 void printTransition(Trie trie);
+Trie prefix(unsigned char *w);
+Trie suffix(unsigned char *w);
+Trie factor(unsigned char *w);
 
 #define LENGTH_ASCII_CHARS UCHAR_MAX + 1
 
@@ -64,6 +67,8 @@ void insertInTrie(Trie trie, unsigned char *w) {
 	}
 	printf("\n");
 }
+
+
 	
 int isInTrie(Trie trie, unsigned char *w) {
 	int num_node = 0;
@@ -99,6 +104,38 @@ void freeTrie(Trie t) {
 		free(t->transition);
 		free(t->finite);
 	}
+}
+
+Trie prefix(unsigned char *w) {
+	int maxNode = strlen(w) << 2;
+	Trie t = createTrie(maxNode);
+    size_t w_len = strlen(w); 
+	for (size_t i = 0; i < w_len - 1; i++) {
+		char tmp[i + 2];
+		memcpy(tmp, w, i + 1);
+		tmp[i + 1] = '\0';
+		insertInTrie(tmp);
+	}
+	return t;
+}
+
+Trie suffix(unsigned char *w) {
+	int maxNode = strlen(w) << 2;
+	Trie t = createTrie(maxNode);
+    size_t w_len = strlen(w);
+	for (size_t i = w_len - 1; i > 0 ; i--) {
+		const char *suffix = w + i;
+		size_t suffix_len = strlen(suffix);
+		char tmp[suffix_len + 1];
+		memcpy(tmp, suffix, suffix_len);
+		tmp[suffix_len] = '\0';
+		insertInTrie(tmp);
+	}
+	return t;
+}
+
+Trie factor(unsigned char *w) {
+	return NULL;
 }
 
 void printTransition(Trie trie) {
