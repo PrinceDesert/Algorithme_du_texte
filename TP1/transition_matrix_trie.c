@@ -107,10 +107,10 @@ void freeTrie(Trie t) {
 }
 
 Trie prefix(unsigned char *w) {
-	int maxNode = strlen(w) << 2;
+	int maxNode = strlen(w) << 1;
 	Trie t = createTrie(maxNode);
     size_t w_len = strlen(w); 
-	for (size_t i = 0; i < w_len - 1; i++) {
+	for (size_t i = 0; i < w_len; i++) {
 		char tmp[i + 2];
 		memcpy(tmp, w, i + 1);
 		tmp[i + 1] = '\0';
@@ -120,10 +120,10 @@ Trie prefix(unsigned char *w) {
 }
 
 Trie suffix(unsigned char *w) {
-	int maxNode = strlen(w) << 2;
+	int maxNode = strlen(w) << 1;
 	Trie t = createTrie(maxNode);
     size_t w_len = strlen(w);
-	for (size_t i = w_len - 1; i > 0 ; i--) {
+	for (size_t i = w_len - 1; i >= 0 ; i--) {
 		const char *suffix = w + i;
 		size_t suffix_len = strlen(suffix);
 		char tmp[suffix_len + 1];
