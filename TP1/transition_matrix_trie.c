@@ -136,6 +136,7 @@ Trie suffix(unsigned char *w) {
 	return t;
 }
 /*
+ * factor
 Trie factor(unsigned char *w) {
 	return NULL;
 }*/
