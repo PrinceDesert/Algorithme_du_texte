@@ -8,7 +8,7 @@
 void printTransition(Trie trie);
 Trie prefix(unsigned char *w);
 Trie suffix(unsigned char *w);
-Trie factor(unsigned char *w);
+// Trie factor(unsigned char *w);
 
 #define LENGTH_ASCII_CHARS UCHAR_MAX + 1
 
@@ -50,6 +50,7 @@ Trie createTrie(int maxNode) {
 	
 void insertInTrie(Trie trie, unsigned char *w) {
 	size_t idxW = 0;
+	printf("Insertion in trie : %s\n", w);
 	for (size_t i = 0; i < (size_t) trie->maxNode && w[idxW] != '\0'; i++) {
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
 			if (!trie->transition[i][j] && j == w[idxW]) {
@@ -60,6 +61,7 @@ void insertInTrie(Trie trie, unsigned char *w) {
 		}
 		idxW++;
 	}
+	printf("[1][97] a : %d\n", trie->transition[1][97]);
 	trie->finite[trie->nextNode-1] = '1';
 	printf("finite :\n");
 	for (size_t i = 0; i < (size_t) trie->maxNode + 1; i++) {
@@ -107,42 +109,44 @@ void freeTrie(Trie t) {
 }
 
 Trie prefix(unsigned char *w) {
-	int maxNode = strlen(w) << 1;
+	int maxNode = (int) (strlen((const char *) w) << 1);
 	Trie t = createTrie(maxNode);
-    size_t w_len = strlen(w); 
+	size_t w_len = strlen((const char *) w); 
 	for (size_t i = 0; i < w_len; i++) {
 		char tmp[i + 2];
 		memcpy(tmp, w, i + 1);
 		tmp[i + 1] = '\0';
-		insertInTrie(tmp);
+		insertInTrie(t, (unsigned char *) tmp);
 	}
 	return t;
 }
 
 Trie suffix(unsigned char *w) {
-	int maxNode = strlen(w) << 1;
+	int maxNode = (int) (strlen((const char *) w) << 1);
 	Trie t = createTrie(maxNode);
-    size_t w_len = strlen(w);
-	for (size_t i = w_len - 1; i >= 0 ; i--) {
-		const char *suffix = w + i;
+	for (long int i = (long int) (strlen((const char *) w) - 1); i >= 0; i--) {
+		const char *suffix = (const char *) w + i;
 		size_t suffix_len = strlen(suffix);
 		char tmp[suffix_len + 1];
 		memcpy(tmp, suffix, suffix_len);
 		tmp[suffix_len] = '\0';
-		insertInTrie(tmp);
+		insertInTrie(t, (unsigned char *) tmp);
 	}
 	return t;
 }
-
+/*
 Trie factor(unsigned char *w) {
 	return NULL;
-}
+}*/
 
 void printTransition(Trie trie) {
+	printf("=======================\n");
+	printf("== TRANSITION MATRIX ==\n");
+	printf("=======================\n");
 	for (size_t i = 0; i < (size_t) trie->maxNode; i++) {
 		printf("%u:\n", (int) i);
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
-			/* DEBUG : remove transition != 0 when finish debug */
+			/* DEBUG : remove transition != 0 to see all */
 			if (trie->transition[i][j] != 0) {
 				if (isprint(j)) {
 					printf("printable char(ascii:%lu) %c : %d\n", j, (char) j, trie->transition[i][j]);
@@ -161,23 +165,23 @@ void printTransition(Trie trie) {
 }
 
 int main(void) {
-	int maxNode = 6;
+	int maxNode = 20;
 	Trie trie = createTrie(maxNode);
 	if (trie == NULL) {
 		return EXIT_FAILURE;
 	}
-	const char *words[] = {"atcg", "agv", NULL};
-	const char *test_words[] = {"ag", "atcg", "gv", "atc", "av", "agv", NULL};
+	const char *words[] = {"gtagct", "tag", "gagct", "ctagt", NULL};
+	//const char *test_words[] = {"ag", "atcg", "gv", "atc", "av", "agv", NULL};
 	for (size_t i = 0; words[i] != NULL; i++)
 		insertInTrie(trie, (unsigned char *) words[i]);
 	printTransition(trie);
-	for (size_t i = 0; test_words[i] != NULL; i++) {
+	/*for (size_t i = 0; test_words[i] != NULL; i++) {
 		if (isInTrie(trie, (unsigned char *) test_words[i])) {
 			printf("Word %s is in trie\n", test_words[i]);
 		} else {
 			printf("Word %s isn't in trie\n", test_words[i]);
 		}
-	}
+	}*/
 	freeTrie(trie);
 	return EXIT_SUCCESS;
 }
