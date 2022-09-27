@@ -55,10 +55,14 @@ void insertInTrie(Trie trie, unsigned char *w) {
 	}
 	size_t idxW = 0;
 	printf("Insertion in trie : %s\n", w);
-	for (size_t i = 0; i < (size_t) trie->maxNode && w[idxW] != '\0'; i = (size_t) trie->nextNode-1) {
+	size_t i = 0;
+	while (i < (size_t) trie->maxNode && w[idxW] != '\0') {
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
-			if (!trie->transition[i][j] && j == w[idxW]) {
-				trie->transition[i][j] = trie->nextNode++;
+			if (j == w[idxW]) {
+				if (!trie->transition[i][j]) {
+					trie->transition[i][j] = trie->nextNode++;
+				}
+				i = (size_t) trie->transition[i][j]; 
 				printf("%c==%c : transition[%lu][%lu]=%d\n", (char) j, w[idxW], i, j, trie->transition[i][j]);
 				break;
 			}
@@ -84,7 +88,6 @@ int isInTrie(Trie trie, unsigned char *w) {
 				lastIdxW = (long int) idxW;
 				i = (size_t) trie->transition[i][j];
 				idxW++;
-				printf("i=%lu, idxW=%lu\n", i, idxW);
 			}
 		}
 		// Node not found
