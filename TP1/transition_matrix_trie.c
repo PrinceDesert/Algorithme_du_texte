@@ -51,7 +51,7 @@ Trie createTrie(int maxNode) {
 void insertInTrie(Trie trie, unsigned char *w) {
 	size_t idxW = 0;
 	printf("Insertion in trie : %s\n", w);
-	for (size_t i = 0; i < (size_t) trie->maxNode && w[idxW] != '\0'; i++) {
+	for (size_t i = 0; i < (size_t) trie->maxNode && w[idxW] != '\0'; i = (size_t) trie->nextNode) {
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
 			if (!trie->transition[i][j] && j == w[idxW]) {
 				trie->transition[i][j] = trie->nextNode++;
@@ -61,7 +61,6 @@ void insertInTrie(Trie trie, unsigned char *w) {
 		}
 		idxW++;
 	}
-	printf("[1][97] a : %d\n", trie->transition[1][97]);
 	trie->finite[trie->nextNode-1] = '1';
 	printf("finite :\n");
 	for (size_t i = 0; i < (size_t) trie->maxNode + 1; i++) {
