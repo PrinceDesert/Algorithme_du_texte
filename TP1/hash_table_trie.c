@@ -10,12 +10,12 @@
 // il peut avoir des conflits qui correspondent à 2 tables
 
 
-// appeler le hash pour le key dans insert, isintrie
+// appeler le hash pour le keyHash dans insert, isintrie
 // vérifier 0.75
 
 int hash(int startNode, unsigned char letter, int maxNode);
-List searchSameLink(List first);
-List searchLink(List link, char letter, int startNode);
+List searchSameLink(List linkToFind);
+List searchLink(List link, unsigned char letter, int startNode);
 // Trie prefix(unsigned char *w); // les préfixes du mot w
 // Trie suffix(unsigned char *w); // les suffixes du mot w
 // Trie factor(unsigned char *w); // les facteurs du mot w
@@ -52,14 +52,14 @@ Trie createTrie(int maxNode) {
 void insertInTrie(Trie trie, unsigned char *w) {
 	size_t i = 0;
 	int idxW = 0;
-	int key = 0;
+	int keyHash = 0;
 	List list = NULL;
 	int startNode = 0; // pour le hash, pour le prochain maillon
 	while (i < (size_t) trie->maxNode && w[idxW] != '\0') {
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
 			if (j == w[idxW]) {
-				key = hash(startNode, (unsigned char) w[idxW], trie->maxNode);
-				printf("Génération du hash : (%d,%c)=%d\n", (int) i, w[idxW], key);
+				keyHash = hash(startNode, (unsigned char) w[idxW], trie->maxNode);
+				printf("Génération du hash : (%d,%c)=%d\n", (int) i, w[idxW], keyHash);
 				list = (List) malloc(sizeof(struct _list));
 				if (list == NULL) {
 					perror("malloc");
@@ -67,28 +67,28 @@ void insertInTrie(Trie trie, unsigned char *w) {
 					return;
 				}
 				// Positionne le maillon suivant
-				if (trie->transition[key] == NULL) {
+				if (trie->transition[keyHash] == NULL) {
 					list->next = NULL;
 				} else {
-					list->next = trie->transition[key];
+					list->next = trie->transition[keyHash];
 				}
 				list->startNode = (int) i;
 				list->targetNode = trie->nextNode;
 				list->letter = (unsigned char) j;
 				/**
-				 * Vérification s'il n'y a un couple identique déja inséré à cet emplacement (key) 
+				 * Vérification s'il n'y a un couple identique déja inséré à cet emplacement (keyHash) 
 				*/
 				if (searchSameLink(list) == NULL) {
 					// affecte en tête
-					trie->transition[key] = list;
+					trie->transition[keyHash] = list;
 					printf("couple (%d,%c)=%d, ajout du maillon = (%d,%c,%d)\n", 
-						(int) i, w[idxW], key, 
+						(int) i, w[idxW], keyHash, 
 						list->startNode, list->letter, list->targetNode);
 					// maillon suivant
 					trie->nextNode++;
-					startNode = list->nextNode;
+					startNode = list->targetNode;
 				} else {
-					printf("Le couple (%d,%c)=%d existe déja\n", (int) i, w[idxW], key);
+					printf("Le couple (%d,%c)=%d existe déja\n", (int) i, w[idxW], keyHash);
 				}
 				break;
 			}
@@ -117,20 +117,18 @@ List searchSameLink(List linkToFind) {
 	return NULL;
 }
 
+//  applique la fonction de hash si pour cette keyHash, si y'a un maillon qui correspond au couple 
 int isInTrie(Trie trie, unsigned char *w) {
-	
-	//  applique la fonction de hash si pour cette key, si y'a un maillon qui correspond au couple 
-	
 	size_t i = 0;
 	int idxW = 0;
-	//int key = 0;
-	//List list = NULL;
+	int keyHash = 0;
+	List list = NULL;
 	int startNode = 0;
 	while (i < (size_t) trie->maxNode && w[idxW] != '\0') {
-		//key = hash(startNode, (unsigned char) w[idxW], trie->maxNode);
+		//keyHash = hash(startNode, (unsigned char) w[idxW], trie->maxNode);
 		
 		// récupère le maillon en tête
-		list = trie->transition[key];
+		list = trie->transition[keyHash];
 		// recherche à partir de ce maillon, le maillon correspondant à la lettre mais je sais pas si il faut aussi le startNode
 		/*x = getNode(l, w[idxW], 
 		if (x == NULL) // error*/
@@ -142,17 +140,17 @@ int isInTrie(Trie trie, unsigned char *w) {
 		if (tmp == NULL) {
 			return 0;
 		}
-		startNode = list->nextNode;
+		startNode = list->targetNode;
 		idxW++;
 		i++;
 	}
-	return trie->finite[i] == '1';
+	return trie->finite[startNode] == '1';
 }
 
 /**
  * retourne le maillon correspondant à la lettre et au startNode
 */
-List searchLink(List link, char letter, int startNode) {
+List searchLink(List link, unsigned char letter, int startNode) {
 	List current = link;
 	while (current != NULL) {
 		if (current->letter == letter 
