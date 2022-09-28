@@ -15,6 +15,7 @@
 
 int hash(int startNode, unsigned char letter, int maxNode);
 List searchSameLink(List first);
+List searchLink(List link, char letter, int startNode);
 // Trie prefix(unsigned char *w); // les préfixes du mot w
 // Trie suffix(unsigned char *w); // les suffixes du mot w
 // Trie factor(unsigned char *w); // les facteurs du mot w
@@ -51,12 +52,15 @@ Trie createTrie(int maxNode) {
 void insertInTrie(Trie trie, unsigned char *w) {
 	size_t i = 0;
 	int idxW = 0;
+	int key = 0;
+	List list = NULL;
+	int startNode = 0; // pour le hash, pour le prochain maillon
 	while (i < (size_t) trie->maxNode && w[idxW] != '\0') {
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
 			if (j == w[idxW]) {
-				int key = hash((int) i, (unsigned char) w[idxW], trie->maxNode);
+				key = hash(startNode, (unsigned char) w[idxW], trie->maxNode);
 				printf("Génération du hash : (%d,%c)=%d\n", (int) i, w[idxW], key);
-				List list = (List) malloc(sizeof(struct _list));
+				list = (List) malloc(sizeof(struct _list));
 				if (list == NULL) {
 					perror("malloc");
 					free(trie->transition);
@@ -68,8 +72,8 @@ void insertInTrie(Trie trie, unsigned char *w) {
 				} else {
 					list->next = trie->transition[key];
 				}
-				list->startNode = trie->nextNode;
-				list->targetNode = trie->nextNode + 1;
+				list->startNode = (int) i;
+				list->targetNode = trie->nextNode;
 				list->letter = (unsigned char) j;
 				/**
 				 * Vérification s'il n'y a un couple identique déja inséré à cet emplacement (key) 
@@ -77,6 +81,12 @@ void insertInTrie(Trie trie, unsigned char *w) {
 				if (searchSameLink(list) == NULL) {
 					// affecte en tête
 					trie->transition[key] = list;
+					printf("couple (%d,%c)=%d, ajout du maillon = (%d,%c,%d)\n", 
+						(int) i, w[idxW], key, 
+						list->startNode, list->letter, list->targetNode);
+					// maillon suivant
+					trie->nextNode++;
+					startNode = list->nextNode;
 				} else {
 					printf("Le couple (%d,%c)=%d existe déja\n", (int) i, w[idxW], key);
 				}
@@ -86,12 +96,14 @@ void insertInTrie(Trie trie, unsigned char *w) {
 		idxW++;
 		i++;
 	}
+	trie->finite[trie->nextNode-1] = '1';
 }
-	
-	
-// recherche dans list un maillon qui est le même que celui linkToFind
-// pour cela, on regarde le first->next puis first->next->next ect..
-// retourne null si existe pas, retourne le suivant
+
+/** 
+ * recherche dans list un maillon qui est le même que celui linkToFind
+ * pour cela, regarde le linkToFind->next puis linkToFind->next->next ect..
+ * retourne null si existe pas sinon retourne le suivant
+*/
 List searchSameLink(List linkToFind) {
 	List current = linkToFind->next;
 	while (linkToFind != NULL && current != NULL) {
@@ -104,42 +116,53 @@ List searchSameLink(List linkToFind) {
 	}
 	return NULL;
 }
-/*
-// Retourne le maillon de l correspondant au char c et startNode
-List getNode(List l, char c, int startNode) {
-	List current = l;
-	while (current != NULL) {
-		if (first->startNode == current->startNode && first->letter == current->letter) {
-			return current;
-		}
-		current = current->next;
-	}
-	return NULL;
-}
-	
+
 int isInTrie(Trie trie, unsigned char *w) {
 	
 	//  applique la fonction de hash si pour cette key, si y'a un maillon qui correspond au couple 
 	
 	size_t i = 0;
 	int idxW = 0;
-	
+	//int key = 0;
+	//List list = NULL;
+	int startNode = 0;
 	while (i < (size_t) trie->maxNode && w[idxW] != '\0') {
-		int key = 0;
-		// récupère le noeud correspondant à clé et égale à la lettre w[idxW]
-		List l = trie->transition[key];
-		// recherche le maillon correspondant à la lettre mais je sais pas si il faut aussi le startNode
-		x = getNode(l, w[idxW], 
-		if (x == NULL) // error
+		//key = hash(startNode, (unsigned char) w[idxW], trie->maxNode);
 		
+		// récupère le maillon en tête
+		list = trie->transition[key];
+		// recherche à partir de ce maillon, le maillon correspondant à la lettre mais je sais pas si il faut aussi le startNode
+		/*x = getNode(l, w[idxW], 
+		if (x == NULL) // error*/
 		
+		// Un problème est que si il y a déja deux insert, et là le startNode commence à 4 et pas à 0
+		// mais jsp si c un pb car si c dans l'ordre (0,a; 1,b ect donc c ok)
+		
+		List tmp = searchLink(list, w[idxW], startNode);
+		if (tmp == NULL) {
+			return 0;
+		}
+		startNode = list->nextNode;
 		idxW++;
+		i++;
 	}
-	
-	// pour debug
-	w[0] = '1';
-	return w[0] == '1';
-}*/
+	return trie->finite[i] == '1';
+}
+
+/**
+ * retourne le maillon correspondant à la lettre et au startNode
+*/
+List searchLink(List link, char letter, int startNode) {
+	List current = link;
+	while (current != NULL) {
+		if (current->letter == letter 
+			&& current->startNode == startNode) {
+			return current;
+		}
+		current = current->next;
+	}
+	return NULL;
+}
 
 void freeTrie(Trie t) {
 	if (t != NULL) {
