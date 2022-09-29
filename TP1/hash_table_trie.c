@@ -54,7 +54,7 @@ void insertInTrie(Trie trie, unsigned char *w) {
 	int idxW = 0;
 	int keyHash = 0;
 	List list = NULL;
-	int startNode = 0; // pour le hash, pour le prochain maillon
+	int startNode = trie->nextNode; // pour le hash, pour le prochain maillon
 	while (i < (size_t) trie->maxNode && w[idxW] != '\0') {
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
 			if (j == w[idxW]) {
@@ -81,8 +81,8 @@ void insertInTrie(Trie trie, unsigned char *w) {
 				if (searchSameLink(list) == NULL) {
 					// affecte en tête
 					trie->transition[keyHash] = list;
-					printf("couple (%d,%c)=%d, ajout du maillon = (%d,%c,%d)\n", 
-						(int) i, w[idxW], keyHash, 
+					printf("Pair : (%d,%c)=%d, adding link to %d => (%d,%c,%d)\n", 
+						(int) i, w[idxW], keyHash, keyHash,
 						list->startNode, list->letter, list->targetNode);
 					// maillon suivant
 					trie->nextNode++;
@@ -125,22 +125,22 @@ int isInTrie(Trie trie, unsigned char *w) {
 	List list = NULL;
 	int startNode = 0;
 	while (i < (size_t) trie->maxNode && w[idxW] != '\0') {
-		//keyHash = hash(startNode, (unsigned char) w[idxW], trie->maxNode);
+		keyHash = hash(startNode, (unsigned char) w[idxW], trie->maxNode);
 		
 		// récupère le maillon en tête
 		list = trie->transition[keyHash];
 		// recherche à partir de ce maillon, le maillon correspondant à la lettre mais je sais pas si il faut aussi le startNode
-		/*x = getNode(l, w[idxW], 
-		if (x == NULL) // error*/
 		
 		// Un problème est que si il y a déja deux insert, et là le startNode commence à 4 et pas à 0
 		// mais jsp si c un pb car si c dans l'ordre (0,a; 1,b ect donc c ok)
 		
-		List tmp = searchLink(list, w[idxW], startNode);
-		if (tmp == NULL) {
+		printf("searchLink (%c,%d)=%d\n", w[idxW], startNode, keyHash);
+		List x = searchLink(list, w[idxW], startNode);
+		if (x == NULL) {
+			printf("Link not found for (%c,%d)\n", w[idxW], startNode);  
 			return 0;
 		}
-		startNode = list->targetNode;
+		startNode = x->targetNode;
 		idxW++;
 		i++;
 	}
@@ -176,6 +176,35 @@ int hash(int startNode, unsigned char letter, int maxNode) {
 	return (startNode + letter) % (maxNode - 1);
 	// 1 + 'a' % 50
 }
+
+void printTransition(Trie trie) {
+	printf("===========================\n");
+	printf("== TRANSITION HASH TABLE ==\n");
+	printf("===========================\n");
+	size_t key = 0;
+	List link = NULL;
+	while (key < (size_t) trie->maxNode) {
+		link = trie->transition[key];
+		printf("[%lu] : ", key);
+		if (link == NULL) {
+			printf("NULL");
+		}
+		while (link != NULL) {
+			printf("(%d,%c,%d) - ", link->startNode, link->letter, link->targetNode);
+			if (link->next == NULL) {
+				printf("NULL");
+			}
+			link = link->next;
+		}
+		printf("\n");
+		key++;
+	}
+	printf("finite : ");
+	for (size_t i = 0; i < (size_t) trie->maxNode + 1; i++) {
+		printf("%c|", trie->finite[i]);
+	}
+	printf("\n");
+}
 	
 int main(void) {
 	int maxNode = 20;
@@ -183,6 +212,18 @@ int main(void) {
 	if (trie == NULL) {
 		return EXIT_FAILURE;
 	}
-	insertInTrie(trie, (unsigned char *) "atcg");
+	const char *words[] = {"gtagct", "agv", NULL};
+	const char *test_words[] = {"gtagct", "agv", NULL};
+	for (size_t i = 0; words[i] != NULL; i++)
+		insertInTrie(trie, (unsigned char *) words[i]);
+	printTransition(trie);
+	for (size_t i = 0; test_words[i] != NULL; i++) {
+		if (isInTrie(trie, (unsigned char *) test_words[i])) {
+			printf("Word %s is in trie\n", test_words[i]);
+		} else {
+			printf("Word %s isn't in trie\n", test_words[i]);
+		}
+	}
+	freeTrie(trie);
 	return EXIT_SUCCESS;
 }
