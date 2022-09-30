@@ -54,7 +54,7 @@ void insertInTrie(Trie trie, unsigned char *w) {
 	int idxW = 0;
 	int keyHash = 0;
 	List list = NULL;
-	int startNode = trie->nextNode; // pour le hash, pour le prochain maillon
+	int startNode = 0; // pour le hash, pour le prochain maillon
 	while (i < (size_t) trie->maxNode && w[idxW] != '\0') {
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
 			if (j == w[idxW]) {
@@ -72,7 +72,7 @@ void insertInTrie(Trie trie, unsigned char *w) {
 				} else {
 					list->next = trie->transition[keyHash];
 				}
-				list->startNode = (int) i;
+				list->startNode = startNode;
 				list->targetNode = trie->nextNode;
 				list->letter = (unsigned char) j;
 				/**
@@ -86,6 +86,9 @@ void insertInTrie(Trie trie, unsigned char *w) {
 						list->startNode, list->letter, list->targetNode);
 					// maillon suivant
 					trie->nextNode++;
+					
+					// le problème vient d'ici
+					
 					startNode = list->targetNode;
 				} else {
 					printf("Le couple (%d,%c)=%d existe déja\n", (int) i, w[idxW], keyHash);
@@ -134,10 +137,10 @@ int isInTrie(Trie trie, unsigned char *w) {
 		// Un problème est que si il y a déja deux insert, et là le startNode commence à 4 et pas à 0
 		// mais jsp si c un pb car si c dans l'ordre (0,a; 1,b ect donc c ok)
 		
-		printf("searchLink (%c,%d)=%d\n", w[idxW], startNode, keyHash);
+		printf("searchLink (%d,%c)=%d\n", startNode, w[idxW], keyHash);
 		List x = searchLink(list, w[idxW], startNode);
 		if (x == NULL) {
-			printf("Link not found for (%c,%d)\n", w[idxW], startNode);  
+			printf("Link not found for (%d,%c)=%d\n", startNode, w[idxW], keyHash);  
 			return 0;
 		}
 		startNode = x->targetNode;
