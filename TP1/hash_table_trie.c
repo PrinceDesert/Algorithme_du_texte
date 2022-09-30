@@ -168,6 +168,13 @@ List searchLink(List link, unsigned char letter, int startNode) {
 void freeTrie(Trie t) {
 	if (t != NULL) {
 		for (size_t i = 0; i < (size_t) t->maxNode; i++) {
+			List current = t->transition[i];
+			List next = NULL;
+			while (current != NULL) {
+				next = l->next;
+				free(current);
+				current = next;
+			}
 			free(t->transition[i]);
 		}
 		free(t->transition);
