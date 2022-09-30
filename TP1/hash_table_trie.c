@@ -16,7 +16,7 @@
 int hash(int startNode, unsigned char letter, int maxNode);
 List searchSameLink(List linkToFind);
 List searchLink(List link, unsigned char letter, int startNode);
-// Trie prefix(unsigned char *w); // les préfixes du mot w
+Trie prefix(unsigned char *w); // les préfixes du mot w
 // Trie suffix(unsigned char *w); // les suffixes du mot w
 // Trie factor(unsigned char *w); // les facteurs du mot w
 #define LENGTH_ASCII_CHARS UCHAR_MAX + 1
@@ -168,13 +168,13 @@ List searchLink(List link, unsigned char letter, int startNode) {
 void freeTrie(Trie t) {
 	if (t != NULL) {
 		for (size_t i = 0; i < (size_t) t->maxNode; i++) {
-			List current = t->transition[i];
+			/*List current = t->transition[i];
 			List next = NULL;
 			while (current != NULL) {
-				next = l->next;
+				next = current->next;
 				free(current);
 				current = next;
-			}
+			}*/
 			free(t->transition[i]);
 		}
 		free(t->transition);
@@ -215,6 +215,20 @@ void printTransition(Trie trie) {
 	}
 	printf("\n");
 }
+
+Trie prefix(unsigned char *w) {
+	if (w == NULL) return NULL;
+	size_t w_len = strlen((const char *) w);
+	int maxNode = (int) (w_len << 1);
+	Trie t = createTrie(maxNode);
+	for (size_t i = 0; i < w_len; i++) {
+		char tmp[i + 2];
+		memcpy(tmp, w, i + 1);
+		tmp[i + 1] = '\0';
+		insertInTrie(t, (unsigned char *) tmp);
+	}
+	return t;
+}
 	
 int main(void) {
 	int maxNode = 20;
@@ -222,8 +236,8 @@ int main(void) {
 	if (trie == NULL) {
 		return EXIT_FAILURE;
 	}
-	const char *words[] = {"gtagct", "agv", NULL};
-	const char *test_words[] = {"gtagct", "agv", NULL};
+	const char *words[] = {"gtagct", "agv", "ag", NULL};
+	const char *test_words[] = {"gtagct", "agv", "ag", NULL};
 	for (size_t i = 0; words[i] != NULL; i++)
 		insertInTrie(trie, (unsigned char *) words[i]);
 	printTransition(trie);
@@ -232,6 +246,18 @@ int main(void) {
 			printf("Word %s is in trie\n", test_words[i]);
 		} else {
 			printf("Word %s isn't in trie\n", test_words[i]);
+		}
+	}
+	Trie triePrefix = prefix((unsigned char *) words[0]);
+	printTransition(triePrefix);
+	for (size_t i = 0; i < strlen(words[0]); i++) {
+		char tmp[i + 2];
+		memcpy(tmp, words[0], i + 1);
+		tmp[i + 1] = '\0';
+		if (isInTrie(trie, (unsigned char *) tmp)) {
+			printf("Prefix %s is in the word %s\n", tmp, words[0]);
+		} else {
+			printf("Prefix %s is in the word %s\n", tmp, words[0]);
 		}
 	}
 	freeTrie(trie);
