@@ -17,7 +17,7 @@ int hash(int startNode, unsigned char letter, int maxNode);
 List searchSameLink(List linkToFind);
 List searchLink(List link, unsigned char letter, int startNode);
 Trie prefix(unsigned char *w); // les préfixes du mot w
-// Trie suffix(unsigned char *w); // les suffixes du mot w
+Trie suffix(unsigned char *w); // les suffixes du mot w
 // Trie factor(unsigned char *w); // les facteurs du mot w
 #define LENGTH_ASCII_CHARS UCHAR_MAX + 1
 	
@@ -229,7 +229,23 @@ Trie prefix(unsigned char *w) {
 	}
 	return t;
 }
-	
+
+Trie suffix(unsigned char *w) {
+	if (w == NULL) return NULL;
+	size_t w_len = strlen((const char *) w); 
+	int maxNode = (int) (strlen(w_len << 1);
+	Trie t = createTrie(maxNode);
+	for (long int i = (long int) (w_len - 1); i >= 0; i--) {
+		const char *suffix = (const char *) w + i;
+		size_t suffix_len = strlen(suffix);
+		char tmp[suffix_len + 1];
+		memcpy(tmp, suffix, suffix_len);
+		tmp[suffix_len] = '\0';
+		insertInTrie(t, (unsigned char *) tmp);
+	}
+	return t;	
+}
+
 int main(void) {
 	int maxNode = 20;
 	Trie trie = createTrie(maxNode);
@@ -249,6 +265,9 @@ int main(void) {
 		}
 	}
 	Trie triePrefix = prefix((unsigned char *) words[0]);
+	if (triePrefix == NULL) {
+		return EXIT_FAILURE;
+	}
 	printTransition(triePrefix);
 	for (size_t i = 0; i < strlen(words[0]); i++) {
 		char tmp[i + 2];
