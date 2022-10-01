@@ -168,13 +168,13 @@ List searchLink(List link, unsigned char letter, int startNode) {
 void freeTrie(Trie t) {
 	if (t != NULL) {
 		for (size_t i = 0; i < (size_t) t->maxNode; i++) {
-			/*List current = t->transition[i];
+			List current = t->transition[i];
 			List next = NULL;
 			while (current != NULL) {
 				next = current->next;
-				free(current);
 				current = next;
-			}*/
+				free(next);
+			}
 			free(t->transition[i]);
 		}
 		free(t->transition);
@@ -233,7 +233,7 @@ Trie prefix(unsigned char *w) {
 Trie suffix(unsigned char *w) {
 	if (w == NULL) return NULL;
 	size_t w_len = strlen((const char *) w); 
-	int maxNode = (int) (strlen(w_len << 1);
+	int maxNode = (int) (w_len << 1);
 	Trie t = createTrie(maxNode);
 	for (long int i = (long int) (w_len - 1); i >= 0; i--) {
 		const char *suffix = (const char *) w + i;
