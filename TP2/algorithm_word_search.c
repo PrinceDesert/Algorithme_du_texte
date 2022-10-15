@@ -27,7 +27,26 @@ int algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle(const char *
 int algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(const char *word, int m, const char *text, int n);
 	
 // algorithme de Morris-Pratt
-int algorithme_Morris_Pratt();
+/**
+ * Phase de pré-traitement :
+ * Soit la table bon-préf à m +1 élements définies comme suit, pour 0 <= i <= m
+ * bon-préf[i] = -1 si i = 0
+ * bon-préf[i] = |Bord(x[0..i-1]| sinon
+ * 
+ * Algorithme :
+ * i = 0
+ * pour j=0 à n-1 faire
+ *   tantque i>=0 et x[i] != y[i] faire
+ *     i=bon-préf[i]
+ *   i=i+1
+ *   si i = m alors
+ *      signaler une occurence de x
+ *      i=bon-préf[i]
+*/
+int pre_processsing_algorithme_Morris_Pratt();
+int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n);
+
+
 // algorithme de Knuth-Morris-Pratt
 int algorithme_Knuth_Morris_Pratt();
 // algorithme de Boyer-Moore
