@@ -13,18 +13,18 @@
 // boucle rapide : décale la fenetre à la premier occurence de la lettre en gros c'est l'index qui se décale à une potentiel occurence
 
 // algorithme naif, avec boucle interne, sans boucle rapide, sans sentinelle (word = mot à trouver) pour compter le nb d'occurence de word dans text
-int algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle(const char *text, int m, const char *word, int n);
+int algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n);
 // algorithme naif, avec boucle interne, avec boucle rapide, sans sentinelle pour compter le nb d'occurence de word dans text
-int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle(const char *text, int m, const char *word, int n);
+int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n);
 // algorithme naif, avec boucle interne, avec boucle rapide, avec sentinelle pour compter le nb d'occurence de word dans text
-int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle(const char *text, int m, const char *word, int n);
+int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle(const char *word, int m, const char *text, int n);
 
 // algorithme naif, avec strncmp, sans boucle rapide, sans sentinelle pour compter le nb d'occurence de word dans text 
-int algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle(const char *text, int m, const char *word, int n);
+int algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n);
 // algorithme naif, avec strncmp, avec boucle rapide, sans sentinelle pour compter le nb d'occurence de word dans text 
-//int algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle(const char *text, int m, const char *word, int n);
+//int algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n);
 // algorithme naif, avec strncmp, avec boucle rapide, avec sentinelle pour compter le nb d'occurence de word dans text
-//int algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(char *text, int m, const char *word, int n);
+//int algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(char *word, int m, const char *text, int n);
 
 // algorithme de Morris-Pratt
 int algorithme_Morris_Pratt();
@@ -38,35 +38,40 @@ int algorithme_Horspool();
 int algorithme_Quick_Search();
 
 // utils
-int findNextIndex(const char *word, size_t word_len, char c);
+int findNextIndex(const char *word, size_t word_len, size_t start, char c);
 char *substr(const char *src, size_t pos, size_t len);
 
 // un generateur de texte, un generateur de mot en bash
 // generer les courbes avec un autre outil
 
 int main(void) {
-	const char *word = "ataataatataatataa";
 	const char *text = "ataataatataatataa";
+	const char *word = "at";
+	
+	printf("== %s : %s ==\n", text, word);
 	
 	printf("== algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle : %d ==\n",
-		algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle(text, (int) strlen(text), word, (int) strlen(word)));
+		algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle(word, (int) strlen(word), text, (int) strlen(text)));
 	
 	printf("== algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle : %d ==\n",
-		algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle(text, (int) strlen(text), word, (int) strlen(word)));
+		algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle(word, (int) strlen(word), text, (int) strlen(text)));
 	
 	printf("== algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle : %d ==\n",
-		algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle(text, (int) strlen(text), word, (int) strlen(word)));
+		algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle(word, (int) strlen(word), text, (int) strlen(text)));
+	
+	printf("== algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle : %d ==\n", 
+		algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle(word, (int) strlen(word), text, (int) strlen(text)));
 	
 	
 	return EXIT_SUCCESS;
 }
 
-int algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle(const char *text, int m, const char *word, int n) {
-	if (text == NULL || word == NULL || n == 0 || m == 0) return 0;
+int algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n) {
+	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	int i, j;
 	int nbOcc = 0;
 	for (j = 0; j <= n - m; j++) {
-		for (i = 0; i < m && text[i] == word[i + j]; i++);
+		for (i = 0; i < m && word[i] == text[i + j]; i++);
 		if (i >= m) {
 			/*
 			printf("shift : %d\n", j);
@@ -80,23 +85,18 @@ int algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle(const
 }
 
 // utilise findNextInd pour passer à la prochaine occurence pour décaler la fenetre jusqu'a la prochaine occurence trouve ( = boucle rapide)
-int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle(const char *text, int m, const char *word, int n) {
-	if (text == NULL || word == NULL || n == 0 || m == 0) return 0;
+int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n) {
+	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	int i, j;
 	int nbOcc = 0;
 	int nextOcc = -1;
 	for (j = 0; j <= n - m; j++) {
-		for (i = 0; i < m && text[i] == word[i + j]; i++);
+		for (i = 0; i < m && word[i] == text[i + j]; i++);
 		if (i >= m) {
-			/*
-			printf("shift : %d\n", j);
-			printf("%s\n", word);
-			printf("%*s%s\n", j, " ", text);
-			*/
 			nbOcc++;
 		} else {
-			if ((nextOcc = findNextIndex(text, strlen(text), word[i])) != -1) {
-				j = (size_t) nextOcc;
+			if ((nextOcc = findNextIndex(text, strlen(text), (size_t) j, word[j])) != -1) {
+				j = nextOcc;
 			}
 		}
 	}
@@ -104,13 +104,14 @@ int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle(const
 }
 
 // la sentinelle sert à ne pas tester à chaque fois si on est en fin de mot
-int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle(const char *text, int m, const char *word, int n) {
+int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle(const char *word, int m, const char *text, int n) {
+	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	int i, j = 0;
 	int nbOcc = 0;
 	int nextOcc = -1;
 	
 	// création d'un copie du texte et ajout du mot à la fin du texte pour être sur d'avoir une occurence = sentinelle
-	size_t newTextLength = (size_t) n + strlen(word);
+	size_t newTextLength = (size_t) n+1 + strlen(word);
 	char *newText = (char *) malloc(newTextLength * sizeof(char));
 	if (newText == NULL) {
 		perror("realloc");
@@ -120,9 +121,10 @@ int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle(const
 		perror("snprintf");
 		exit(EXIT_FAILURE);
 	}
-	
-	while (nbOcc != 1) {
-		for (i = 0; i < m && newText[i] == word[i + j]; i++);
+	// s'arrête dès que la première occurence a été trouvé
+	int find = nbOcc != 1;
+	while (find) {
+		for (i = 0; i < m && word[i] == newText[i + j]; i++);
 		if (i >= m) {
 			/*
 			printf("shift : %d\n", j);
@@ -130,8 +132,12 @@ int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle(const
 			printf("%*s%s\n", j, " ", newText);
 			*/
 			nbOcc++;
+			/**
+			 * METTRE un test si j est arrivée en fin de texte
+			 * Demander au prof si la sentinelle, si y'a une occurence trouvé alors il faut vérifier si on est en fin de texte pour les occurences suivantes
+			*/
 		} else {
-			if ((nextOcc = findNextIndex((const char *) newText, strlen(newText), word[i])) != -1) {
+			if ((nextOcc = findNextIndex(newText, strlen(newText), (size_t) j, word[j])) != -1) {
 				j = nextOcc;
 			}
 		}
@@ -141,7 +147,7 @@ int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle(const
 
 // avec strncmp au lieu de comparer 1 par 1, on utilise strncmp mais on garde la boucle principale
 int algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle(const char *text, int m, const char *word, int n) {
-	if (text == NULL || word == NULL || n == 0 || m == 0) return 0;
+	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	int i, j;
 	int nbOcc = 0;
 	for (j = 0; j <= n - m; ++j) {
@@ -157,18 +163,22 @@ int algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle(const char *
 	}
 	return nbOcc;
 }
+
 /*
-int algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle(const char *text, size_t m, const char *word, size_t n) {
+int algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle(const char *word, size_t m, const char *text, size_t n) {
+	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	return 0;
 }
 
-int algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(char *text, size_t m, const char *word, size_t n) {
+int algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(char *word, size_t m, const char *text, size_t n) {
+	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	return 0;
 }*/
 
-int findNextIndex(const char *word, size_t word_len, char c) {
+int findNextIndex(const char *word, size_t word_len, size_t start, char c) {
 	if (word == NULL || word_len == 0) return -1;
-	for (size_t i = 0; i < word_len; i++) {
+	// printf("findNextIndex : word %s(%lu) - %lu - %c\n", word, word_len, start, c);
+	for (size_t i = start; i < word_len; i++) {
 		if (word[i] == c) {
 			return (int) i;
 		}
