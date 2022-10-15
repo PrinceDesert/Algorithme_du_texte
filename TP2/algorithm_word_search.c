@@ -5,7 +5,9 @@
 /**
  * Algorithmes de recherche exacte d’un mot dans un texte
 */
-	
+
+// measure time : https://www.geeksforgeeks.org/how-to-measure-time-taken-by-a-program-in-c/
+
 // avec sentinelle : concatene le mot à la fin
 	
 // trop à droite : si le mot a comparé dépasse la fin du texte
