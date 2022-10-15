@@ -43,7 +43,7 @@ int algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(const char *
  *      signaler une occurence de x
  *      i=bon-préf[i]
 */
-int pre_processsing_algorithme_Morris_Pratt();
+int pre_processsing_algorithme_Morris_Pratt(void);
 int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n);
 
 
