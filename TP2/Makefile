@@ -9,4 +9,4 @@ all: $(EXE)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm -f $(ODIR)/*.o $(INCDIR)/*~
+	rm -f $(EXE)
