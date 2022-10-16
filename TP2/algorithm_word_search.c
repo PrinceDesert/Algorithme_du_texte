@@ -46,7 +46,7 @@ int algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(const char *
  *      signaler une occurence de x
  *      i=bon-préf[i]
 */
-int pre_processsing_algorithme_Morris_Pratt(void);
+void pre_processsing_algorithme_Morris_Pratt(const char *word, int m, int goodPrefix[]);
 int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n);
 
 // algorithme de Knuth-Morris-Pratt
@@ -97,7 +97,6 @@ int main(void) {
 				"algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle",
 				word, word_length, text, text_length);
 				
-	
 	print_result_and_measured_time(
 			algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle,
 			"algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle",
@@ -122,6 +121,13 @@ int main(void) {
 			algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle,
 			"algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
 			word, word_length, text, text_length);
+	
+	text = "GCATCGCAGAGAGTATACAGTACG";
+	word = "GCAGAGAG";
+	print_result_and_measured_time(
+			algorithme_Morris_Pratt,
+			"algorithme_Morris_Pratt",
+			word, (int) strlen(word), text, (int) strlen(text));
 	
 	return EXIT_SUCCESS;
 }
@@ -287,8 +293,43 @@ int algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(const char *
 }
 	
 	
-int pre_processsing_algorithme_Morris_Pratt(void);
-int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n);
+void pre_processsing_algorithme_Morris_Pratt(const char *word, int m, int goodPrefix[]) {
+	int i, j;
+	goodPrefix[0] = -1;
+	i = 0;
+	for (j = 1; j < m; j++) {
+		goodPrefix[j] = i;
+		while (i >= 0 && word[i] != word[j]) {
+			i = goodPrefix[i];
+		}
+		i++;
+	}
+	goodPrefix[m] = i;
+	/*
+	for (int k = 0; k < (int) strlen(word)+1; k++) {
+		printf("%d ", goodPrefix[k]);
+	}
+	printf("\n");
+	*/
+}
+int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n) {
+	// pre-processing
+	int goodPrefix[strlen(word) + 1];
+	pre_processsing_algorithme_Morris_Pratt(word, m, goodPrefix);
+	int i = 0, j = 0;
+	int nbOcc = 0;
+	for (j = 0; j < n; j++) {
+		while (i >= 0 && word[i] != text[j]) {
+			i = goodPrefix[i];
+		}
+		i++;
+		if (i >= m) {
+			nbOcc++;
+			i = goodPrefix[i];
+		}
+	}
+	return nbOcc;
+}
 	
 	
 int findNextIndex(const char *word, size_t word_len, size_t start, char c) {
