@@ -49,7 +49,6 @@ int algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(const char *
 int pre_processsing_algorithme_Morris_Pratt(void);
 int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n);
 
-
 // algorithme de Knuth-Morris-Pratt
 int algorithme_Knuth_Morris_Pratt(const char *word, int m, const char *text, int n);
 // algorithme de Boyer-Moore
@@ -286,6 +285,11 @@ int algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(const char *
 	}
 	return nbOcc;
 }
+	
+	
+int pre_processsing_algorithme_Morris_Pratt(void);
+int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n);
+	
 	
 int findNextIndex(const char *word, size_t word_len, size_t start, char c) {
 	if (word == NULL || word_len == 0) return -1;
