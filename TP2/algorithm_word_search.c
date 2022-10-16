@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 	
 /**
  * Algorithmes de recherche exacte d’un mot dans un texte
@@ -50,13 +51,13 @@ int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n);
 
 
 // algorithme de Knuth-Morris-Pratt
-int algorithme_Knuth_Morris_Pratt();
+int algorithme_Knuth_Morris_Pratt(const char *word, int m, const char *text, int n);
 // algorithme de Boyer-Moore
-int algorithme_Boyer_Moore();
+int algorithme_Boyer_Moore(const char *word, int m, const char *text, int n);
 // algorithme de Horspool
-int algorithme_Horspool();
+int algorithme_Horspool(const char *word, int m, const char *text, int n);
 // algorithme Quick Search
-int algorithme_Quick_Search();
+int algorithme_Quick_Search(const char *word, int m, const char *text, int n);
 	
 // utils
 int findNextIndex(const char *word, size_t word_len, size_t start, char c);
@@ -65,29 +66,63 @@ char *substr(const char *src, size_t pos, size_t len);
 // un generateur de texte, un generateur de mot en bash
 // generer les courbes avec un autre outil
 	
+	
+void print_result_and_measured_time(
+	int (*function)(const char *word, int m, const char *text, int n),
+	const char *function_name,
+	const char *word, int m, const char *text, int n);
+
+void print_result_and_measured_time(
+	int (*function)(const char *word, int m, const char *text, int n),
+	const char *function_name,
+	const char *word, int m, const char *text, int n) {
+	clock_t start_t = clock();
+	int nbOcc = (*function)(word, m, text, n);
+	clock_t end_t = clock();
+	double time = ((double) (end_t - start_t)) / CLOCKS_PER_SEC;
+	printf("== %s : %d == (%f sec)\n", function_name, nbOcc, time);
+}
+	
 int main(void) {
+	
 	const char *text = "atcgcgatgctag";
 	const char *word = "gc";
+	int text_length = (int) strlen(text);
+	int word_length = (int) strlen(word);
 	
-	printf("== %s : %s ==\n", text, word);
+	printf("== text : %s\n", text);
+	printf("== word : %s\n", word);
 	
-	printf("== algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle : %d ==\n",
-		algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle(word, (int) strlen(word), text, (int) strlen(text)));
+	print_result_and_measured_time(
+				algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle,
+				"algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle",
+				word, word_length, text, text_length);
+				
 	
-	printf("== algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle : %d ==\n",
-		algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle(word, (int) strlen(word), text, (int) strlen(text)));
+	print_result_and_measured_time(
+			algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle,
+			"algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle",
+			word, word_length, text, text_length);
 	
-	printf("== algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle : %d == CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET\n",
-		algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle(word, (int) strlen(word), text, (int) strlen(text)));
+	print_result_and_measured_time(
+			algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle,
+			"algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
+			word, word_length, text, text_length);
 	
-	printf("== algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle : %d ==\n", 
-		algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle(word, (int) strlen(word), text, (int) strlen(text)));
+	print_result_and_measured_time(
+			algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle,
+			"algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle",
+			word, word_length, text, text_length);
 	
-	printf("== algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle : %d == \n",
-		algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle(word, (int) strlen(word), text, (int) strlen(text)));
-		
-	printf("== algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle : %d == CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET \n",
-		algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(word, (int) strlen(word), text, (int) strlen(text)));
+	print_result_and_measured_time(
+			algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle,
+			"algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle",
+			word, word_length, text, text_length);
+	
+	print_result_and_measured_time(
+			algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle,
+			"algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
+			word, word_length, text, text_length);
 	
 	return EXIT_SUCCESS;
 }

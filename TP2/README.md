@@ -1,9 +1,13 @@
 ## Pré-requis :
 - Installer Make
-- Système d'exploitation Linux 
+- Système d'exploitation Linux
 
-## Configuration
+## Compilation
 ```make all```
+
+## Éxecution :
 ```./text_generator```
 ```./algorithm_word_search```
+
+## Nettoyage
 ```make clean```
