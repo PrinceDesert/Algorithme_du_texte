@@ -50,7 +50,9 @@ void pre_processsing_algorithme_Morris_Pratt(const char *word, int m, int goodPr
 int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n);
 
 // algorithme de Knuth-Morris-Pratt
+void pre_processsing_algorithme_Knuth_Morris_Pratt(const char *word, int m, int bestPrefix[]);
 int algorithme_Knuth_Morris_Pratt(const char *word, int m, const char *text, int n);
+
 // algorithme de Boyer-Moore
 int algorithme_Boyer_Moore(const char *word, int m, const char *text, int n);
 // algorithme de Horspool
@@ -120,6 +122,21 @@ int main(void) {
 	print_result_and_measured_time(
 			algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle,
 			"algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
+			word, word_length, text, text_length);
+	
+	print_result_and_measured_time(
+			algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle,
+			"algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
+			word, word_length, text, text_length);
+	
+	print_result_and_measured_time(
+			algorithme_Morris_Pratt,
+			"algorithme_Morris_Pratt",
+			word, word_length, text, text_length);
+	
+	print_result_and_measured_time(
+			algorithme_Knuth_Morris_Pratt,
+			"algorithme_Knuth_Morris_Pratt",
 			word, word_length, text, text_length);
 	
 	text = "GCATCGCAGAGAGTATACAGTACG";
@@ -312,6 +329,7 @@ void pre_processsing_algorithme_Morris_Pratt(const char *word, int m, int goodPr
 	printf("\n");
 	*/
 }
+	
 int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n) {
 	// pre-processing
 	int goodPrefix[strlen(word) + 1];
@@ -326,6 +344,41 @@ int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n) {
 		if (i >= m) {
 			nbOcc++;
 			i = goodPrefix[i];
+		}
+	}
+	return nbOcc;
+}
+	
+void pre_processsing_algorithme_Knuth_Morris_Pratt(const char *word, int m, int bestPrefix[]) {
+	int i, j;
+	bestPrefix[0] = -1;
+	i = 0;
+	for (j = 1; j < m; j++) {
+		if (word[i] == word[j]) {
+			bestPrefix[j] = bestPrefix[i];
+		} else {
+			do {
+				i = bestPrefix[i];
+			} while (i >= 0 && word[i] != word[j]);
+		}
+		i++;
+	}
+	bestPrefix[m] = i;
+}
+	
+int algorithme_Knuth_Morris_Pratt(const char *word, int m, const char *text, int n) {
+	int bestPrefix[strlen(word) + 1];
+	pre_processsing_algorithme_Knuth_Morris_Pratt(word, m, bestPrefix);
+	int i = 0, j = 0;
+	int nbOcc = 0;
+	for (j = 0; j < n; j++) {
+		while (i >= 0 && word[i] != text[j]) {
+			i = bestPrefix[i];
+		}
+		i++;
+		if (i >= m) {
+			nbOcc++;
+			i = bestPrefix[i];
 		}
 	}
 	return nbOcc;
