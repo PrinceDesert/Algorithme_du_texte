@@ -129,22 +129,17 @@ int main(void) {
 			"algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
 			word, word_length, text, text_length);
 	
+	// text = "GCATCGCAGAGAGTATACAGTACG";
+	// word = "GCAGAGAG";
 	print_result_and_measured_time(
 			algorithme_Morris_Pratt,
 			"algorithme_Morris_Pratt",
 			word, word_length, text, text_length);
-	
+			
 	print_result_and_measured_time(
 			algorithme_Knuth_Morris_Pratt,
 			"algorithme_Knuth_Morris_Pratt",
 			word, word_length, text, text_length);
-	
-	text = "GCATCGCAGAGAGTATACAGTACG";
-	word = "GCAGAGAG";
-	print_result_and_measured_time(
-			algorithme_Morris_Pratt,
-			"algorithme_Morris_Pratt",
-			word, (int) strlen(word), text, (int) strlen(text));
 	
 	return EXIT_SUCCESS;
 }
@@ -357,6 +352,7 @@ void pre_processsing_algorithme_Knuth_Morris_Pratt(const char *word, int m, int 
 		if (word[i] == word[j]) {
 			bestPrefix[j] = bestPrefix[i];
 		} else {
+			bestPrefix[j] = i;
 			do {
 				i = bestPrefix[i];
 			} while (i >= 0 && word[i] != word[j]);
