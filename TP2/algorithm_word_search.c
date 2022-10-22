@@ -16,49 +16,32 @@
 // boucle rapide : décale la fenetre à la premier occurence de la lettre en gros c'est l'index qui se décale à une potentiel occurence
 	
 // algorithme naif, avec boucle interne, sans boucle rapide, sans sentinelle (word = mot à trouver) pour compter le nb d'occurence de word dans text
-int algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n);
+int naive_algorithm_inner_loop(const char *word, int m, const char *text, int n);
 // algorithme naif, avec boucle interne, avec boucle rapide, sans sentinelle pour compter le nb d'occurence de word dans text
-int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n);
+int naive_algorithm_inner_loop_quick_loop(const char *word, int m, const char *text, int n);
 // algorithme naif, avec boucle interne, avec boucle rapide, avec sentinelle pour compter le nb d'occurence de word dans text
-int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle(const char *word, int m, const char *text, int n);
+int naive_algorithm_inner_loop_quick_loop_sentinel(const char *word, int m, const char *text, int n);
 	
 // algorithme naif, avec strncmp, sans boucle rapide, sans sentinelle pour compter le nb d'occurence de word dans text 
-int algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n);
+int naive_algorithm_strncmp(const char *word, int m, const char *text, int n);
 // algorithme naif, avec strncmp, avec boucle rapide, sans sentinelle pour compter le nb d'occurence de word dans text 
-int algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n);
+int naive_algorithm_strncmp_quick_loop(const char *word, int m, const char *text, int n);
 // algorithme naif, avec strncmp, avec boucle rapide, avec sentinelle pour compter le nb d'occurence de word dans text
-int algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(const char *word, int m, const char *text, int n);
+int naive_algorithm_strncmp_quick_loop_sentinel(const char *word, int m, const char *text, int n);
 	
-// algorithme de Morris-Pratt
-/**
- * Phase de pré-traitement :
- * Soit la table bon-préf à m +1 élements définies comme suit, pour 0 <= i <= m
- * bon-préf[i] = -1 si i = 0
- * bon-préf[i] = |Bord(x[0..i-1]| sinon
- * 
- * Algorithme :
- * i = 0
- * pour j=0 à n-1 faire
- *   tantque i>=0 et x[i] != y[i] faire
- *     i=bon-préf[i]
- *   i=i+1
- *   si i = m alors
- *      signaler une occurence de x
- *      i=bon-préf[i]
-*/
-void pre_processsing_algorithme_Morris_Pratt(const char *word, int m, int goodPrefix[]);
-int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n);
+void preProcesssing_Morris_Pratt_algorithm(const char *word, int m, int goodPrefix[]);
+int Morris_Pratt_algorithm(const char *word, int m, const char *text, int n);
 
 // algorithme de Knuth-Morris-Pratt
-void pre_processsing_algorithme_Knuth_Morris_Pratt(const char *word, int m, int bestPrefix[]);
-int algorithme_Knuth_Morris_Pratt(const char *word, int m, const char *text, int n);
-
+void preProcesssing_Knuth_Morris_Pratt_algorithm(const char *word, int m, int bestPrefix[]);
+int Knuth_Morris_Pratt_algorithm(const char *word, int m, const char *text, int n);
+	
 // algorithme de Boyer-Moore
-int algorithme_Boyer_Moore(const char *word, int m, const char *text, int n);
+int Boyer_Moore_algorithm(const char *word, int m, const char *text, int n);
 // algorithme de Horspool
-int algorithme_Horspool(const char *word, int m, const char *text, int n);
+int Horspool_algorithm(const char *word, int m, const char *text, int n);
 // algorithme Quick Search
-int algorithme_Quick_Search(const char *word, int m, const char *text, int n);
+int Quick_Search_algorithm(const char *word, int m, const char *text, int n);
 	
 // utils
 int findNextIndex(const char *word, size_t word_len, size_t start, char c);
@@ -66,7 +49,6 @@ char *substr(const char *src, size_t pos, size_t len);
 	
 // un generateur de texte, un generateur de mot en bash
 // generer les courbes avec un autre outil
-	
 	
 void print_result_and_measured_time(
 	int (*function)(const char *word, int m, const char *text, int n),
@@ -95,56 +77,56 @@ int main(void) {
 	printf("== word : %s\n", word);
 	
 	print_result_and_measured_time(
-				algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle,
-				"algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle",
+				naive_algorithm_inner_loop,
+				"naive_algorithm_inner_loop",
 				word, word_length, text, text_length);
 				
 	print_result_and_measured_time(
-			algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle,
-			"algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle",
+			naive_algorithm_inner_loop_quick_loop,
+			"naive_algorithm_inner_loop_quick_loop",
 			word, word_length, text, text_length);
 	
 	print_result_and_measured_time(
-			algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle,
-			"algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
+			naive_algorithm_inner_loop_quick_loop_sentinel,
+			"naive_algorithm_inner_loop_quick_loop_sentinel CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
 			word, word_length, text, text_length);
 	
 	print_result_and_measured_time(
-			algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle,
-			"algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle",
+			naive_algorithm_strncmp,
+			"naive_algorithm_strncmp",
 			word, word_length, text, text_length);
 	
 	print_result_and_measured_time(
-			algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle,
-			"algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle",
+			naive_algorithm_strncmp_quick_loop,
+			"naive_algorithm_strncmp_quick_loop",
 			word, word_length, text, text_length);
 	
 	print_result_and_measured_time(
-			algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle,
-			"algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
+			naive_algorithm_strncmp_quick_loop_sentinel,
+			"naive_algorithm_strncmp_quick_loop_sentinel CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
 			word, word_length, text, text_length);
 	
 	print_result_and_measured_time(
-			algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle,
-			"algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
+			naive_algorithm_strncmp_quick_loop_sentinel,
+			"naive_algorithm_strncmp_quick_loop_sentinel CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
 			word, word_length, text, text_length);
 	
 	// text = "GCATCGCAGAGAGTATACAGTACG";
 	// word = "GCAGAGAG";
 	print_result_and_measured_time(
-			algorithme_Morris_Pratt,
-			"algorithme_Morris_Pratt",
+			Morris_Pratt_algorithm,
+			"Morris_Pratt_algorithm",
 			word, word_length, text, text_length);
 			
 	print_result_and_measured_time(
-			algorithme_Knuth_Morris_Pratt,
-			"algorithme_Knuth_Morris_Pratt",
+			Knuth_Morris_Pratt_algorithm,
+			"Knuth_Morris_Pratt_algorithm",
 			word, word_length, text, text_length);
 	
 	return EXIT_SUCCESS;
 }
 	
-int algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n) {
+int naive_algorithm_inner_loop(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	int i, j;
 	int nbOcc = 0;
@@ -163,7 +145,7 @@ int algorithme_naif_avec_boucle_interne_sans_boucle_rapide_sans_sentinelle(const
 }
 	
 // utilise findNextIndex pour passer à la prochaine occurence pour décaler la fenetre jusqu'a la prochaine occurence trouve ( = boucle rapide)
-int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n) {
+int naive_algorithm_inner_loop_quick_loop(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	int i, j = 0;
 	int nbOcc = 0;
@@ -182,7 +164,7 @@ int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_sans_sentinelle(const
 }
 	
 // la sentinelle sert à ne pas tester à chaque fois si on est en fin de mot
-int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle(const char *word, int m, const char *text, int n) {
+int naive_algorithm_inner_loop_quick_loop_sentinel(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	int i, j = 0;
 	int nbOcc = 0;
@@ -223,7 +205,7 @@ int algorithme_naif_avec_boucle_interne_avec_boucle_rapide_avec_sentinelle(const
 }
 	
 // avec strncmp au lieu de comparer 1 par 1, on utilise strncmp mais on garde la boucle principale
-int algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n) {
+int naive_algorithm_strncmp(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	int i, j;
 	int nbOcc = 0;
@@ -243,7 +225,7 @@ int algorithme_naif_avec_strncmp_sans_boucle_rapide_sans_sentinelle(const char *
 	return nbOcc;
 }
 	
-int algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle(const char *word, int m, const char *text, int n) {
+int naive_algorithm_strncmp_quick_loop(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	int i, j = 0;
 	int nbOcc = 0;
@@ -265,7 +247,7 @@ int algorithme_naif_avec_strncmp_avec_boucle_rapide_sans_sentinelle(const char *
 	return nbOcc;
 }
 	
-int algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(const char *word, int m, const char *text, int n) {
+int naive_algorithm_strncmp_quick_loop_sentinel(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	int i, j = 0;
 	int nbOcc = 0;
@@ -305,7 +287,7 @@ int algorithme_naif_avec_strncmp_avec_boucle_rapide_avec_sentinelle(const char *
 }
 	
 	
-void pre_processsing_algorithme_Morris_Pratt(const char *word, int m, int goodPrefix[]) {
+void preProcesssing_Morris_Pratt_algorithm(const char *word, int m, int goodPrefix[]) {
 	int i, j;
 	goodPrefix[0] = -1;
 	i = 0;
@@ -325,10 +307,10 @@ void pre_processsing_algorithme_Morris_Pratt(const char *word, int m, int goodPr
 	*/
 }
 	
-int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n) {
+int Morris_Pratt_algorithm(const char *word, int m, const char *text, int n) {
 	// pre-processing
 	int goodPrefix[strlen(word) + 1];
-	pre_processsing_algorithme_Morris_Pratt(word, m, goodPrefix);
+	preProcesssing_Morris_Pratt_algorithm(word, m, goodPrefix);
 	int i = 0, j = 0;
 	int nbOcc = 0;
 	for (j = 0; j < n; j++) {
@@ -344,7 +326,7 @@ int algorithme_Morris_Pratt(const char *word, int m, const char *text, int n) {
 	return nbOcc;
 }
 	
-void pre_processsing_algorithme_Knuth_Morris_Pratt(const char *word, int m, int bestPrefix[]) {
+void preProcesssing_Knuth_Morris_Pratt_algorithm(const char *word, int m, int bestPrefix[]) {
 	int i, j;
 	bestPrefix[0] = -1;
 	i = 0;
@@ -362,9 +344,9 @@ void pre_processsing_algorithme_Knuth_Morris_Pratt(const char *word, int m, int 
 	bestPrefix[m] = i;
 }
 	
-int algorithme_Knuth_Morris_Pratt(const char *word, int m, const char *text, int n) {
+int Knuth_Morris_Pratt_algorithm(const char *word, int m, const char *text, int n) {
 	int bestPrefix[strlen(word) + 1];
-	pre_processsing_algorithme_Knuth_Morris_Pratt(word, m, bestPrefix);
+	preProcesssing_Knuth_Morris_Pratt_algorithm(word, m, bestPrefix);
 	int i = 0, j = 0;
 	int nbOcc = 0;
 	for (j = 0; j < n; j++) {
