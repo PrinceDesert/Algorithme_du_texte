@@ -37,7 +37,11 @@ void preProcesssing_Knuth_Morris_Pratt_algorithm(const char *word, int m, int be
 int Knuth_Morris_Pratt_algorithm(const char *word, int m, const char *text, int n);
 	
 // algorithme de Boyer-Moore
-int Boyer_Moore_algorithm(const char *word, int m, const char *text, int n);
+void preProcesssing_Last_Occurence_Boyer_Moore_algorithm(const char *word, int m, int alphabetSize, int lastOcc[]);
+void preProcesssing_Suffixes_Boyer_Moore_algorithm(const char *word, int m, int goodSuffixes[]);
+void preProcesssing_Good_Suffixes_Boyer_Moore_algorithm(const char *word, int m, int goodSuffixes[]);
+int Boyer_Moore_algorithm(const char *word, int m, const char *text, int n, int alphabetSize);
+
 // algorithme de Horspool
 int Horspool_algorithm(const char *word, int m, const char *text, int n);
 // algorithme Quick Search
@@ -46,6 +50,8 @@ int Quick_Search_algorithm(const char *word, int m, const char *text, int n);
 // utils
 int findNextIndex(const char *word, size_t word_len, size_t start, char c);
 char *substr(const char *src, size_t pos, size_t len);
+int max(int a, int b);
+int min(int a, int b);
 	
 // un generateur de texte, un generateur de mot en bash
 // generer les courbes avec un autre outil
@@ -73,8 +79,8 @@ int main(void) {
 	int text_length = (int) strlen(text);
 	int word_length = (int) strlen(word);
 	
-	printf("== text : %s\n", text);
-	printf("== word : %s\n", word);
+	printf("== text : %s (length : %d)\n", text, text_length);
+	printf("== word : %s (length : %d)\n", word, word_length);
 	
 	print_result_and_measured_time(
 				naive_algorithm_inner_loop,
@@ -117,11 +123,13 @@ int main(void) {
 			Morris_Pratt_algorithm,
 			"Morris_Pratt_algorithm",
 			word, word_length, text, text_length);
-			
-	print_result_and_measured_time(
-			Knuth_Morris_Pratt_algorithm,
-			"Knuth_Morris_Pratt_algorithm",
-			word, word_length, text, text_length);
+		
+	clock_t start_t = clock();
+	int nbOcc = Boyer_Moore_algorithm(word, word_length, text, text_length, 13);
+	clock_t end_t = clock();
+	double time = ((double) (end_t - start_t)) / CLOCKS_PER_SEC;
+	printf("== %s : %d == (%f sec)\n", "Boyer_Moore_algorithm", nbOcc, time);
+	
 	
 	return EXIT_SUCCESS;
 }
@@ -362,6 +370,75 @@ int Knuth_Morris_Pratt_algorithm(const char *word, int m, const char *text, int 
 	return nbOcc;
 }
 	
+void preProcesssing_Last_Occurence_Boyer_Moore_algorithm(const char *word, int m, int alphabetSize, int lastOcc[]) {
+	int i;
+	for (i = 0; i < alphabetSize; i++)
+		lastOcc[i] = m;
+	for (i = 0; i <= m - 2; i++)
+		lastOcc[(int) word[i]] = m - 1 - i;
+}
+	
+void preProcesssing_Suffixes_Boyer_Moore_algorithm(const char *word, int m, int suff[]) {
+	int f, g, i;
+	f = 0;
+	g = m - 1;
+	suff[m - 1] = m;
+	for (i = m - 2; i >= 0; i--) {
+		if (i > g && suff[i + m - 1 - f] != i - g) {
+			suff[i] = min(suff[i + m - 1 - f], i - g);
+		} else {
+			g = min(i, g);
+			f = i;
+			while (g >= 0 && word[g] == word[g + m - 1 - f]) {
+				g--;
+			}
+			suff[i] = f - g;
+		}
+	}
+}
+	
+void preProcesssing_Good_Suffixes_Boyer_Moore_algorithm(const char *word, int m, int goodSuffixes[]) {
+	int i, j, suff[m];
+	preProcesssing_Suffixes_Boyer_Moore_algorithm(word, m, suff);
+	i = 0;
+	for (j = m - 2; j >= -1; j--) {
+		if (j == -1 || suff[j] == j + 1) {
+			while (i < m - 1 - j) {
+				goodSuffixes[i] = m - 1 - j;
+				i++;
+			}
+		}
+	}
+	for (j = 0; j <= m - 2; j++) {
+		goodSuffixes[m - 1 - suff[j]] = m - 1 - j;
+	}
+}
+
+int Boyer_Moore_algorithm(const char *word, int m, const char *text, int n, int alphabetSize) {
+	int i, j;
+	int goodSuffixes[m];
+	int lastOcc[alphabetSize];
+	int nbOcc = 0;
+	
+	preProcesssing_Good_Suffixes_Boyer_Moore_algorithm(word, m, goodSuffixes);
+	preProcesssing_Last_Occurence_Boyer_Moore_algorithm(word, m, alphabetSize, lastOcc);
+	
+	j = m - 1;
+	while (j < n) {
+		i = m - 1;
+		while (i >= 0 && word[i] == text[j - m + 1 + i]) {
+			i--;
+		}
+		if (i < 0) {
+			nbOcc++;
+			j += goodSuffixes[0];
+		} else {
+			j += max(goodSuffixes[i], lastOcc[(int) text[j - m + 1 + i]] - m + 1 + i);
+		}
+	}
+	
+	return nbOcc;
+}
 	
 int findNextIndex(const char *word, size_t word_len, size_t start, char c) {
 	if (word == NULL || word_len == 0) return -1;
@@ -392,3 +469,10 @@ char *substr(const char *src, size_t pos, size_t len) {
 	return dest;
 }
 	
+int max(int a, int b) {
+	return a > b ? a : b;
+}
+	
+int min(int a, int b) {
+	return a < b ? a : b;
+}
