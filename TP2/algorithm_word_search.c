@@ -43,9 +43,11 @@ void preProcesssing_Good_Suffixes_Boyer_Moore_algorithm(const char *word, int m,
 int Boyer_Moore_algorithm(const char *word, int m, const char *text, int n, int alphabetSize);
 
 // algorithme de Horspool
-int Horspool_algorithm(const char *word, int m, const char *text, int n);
+int Horspool_algorithm(const char *word, int m, const char *text, int n, int alphabetSize);
+
 // algorithme Quick Search
-int Quick_Search_algorithm(const char *word, int m, const char *text, int n);
+void preProcesssing_Bad_Chars_Shift_Quick_Search_algorithm(const char *word, int m, int alphabetSize, int badChars[]);
+int Quick_Search_algorithm(const char *word, int m, const char *text, int n, int alphabetSize);
 	
 // utils
 int findNextIndex(const char *word, size_t word_len, size_t start, char c);
@@ -435,6 +437,50 @@ int Boyer_Moore_algorithm(const char *word, int m, const char *text, int n, int 
 		} else {
 			j += max(goodSuffixes[i], lastOcc[(int) text[j - m + 1 + i]] - m + 1 + i);
 		}
+	}
+	
+	return nbOcc;
+}
+	
+int Horspool_algorithm(const char *word, int m, const char *text, int n, int alphabetSize) {
+	int j;
+	int lastOcc[alphabetSize];
+	char c;
+	int nbOcc = 0;
+	
+	preProcesssing_Last_Occurence_Boyer_Moore_algorithm(word, m, alphabetSize, lastOcc);
+	
+	j = 0;
+	while (j <= n - m) {
+		c = text[j + m - 1];
+		if (word[m - 1] == c && memcmp(text + j, word, (size_t) (m - 1)) == 0)
+			nbOcc++;
+		j += lastOcc[(int) c];
+	}
+	return nbOcc;
+}
+	
+	
+void preProcesssing_Bad_Chars_Shift_Quick_Search_algorithm(const char *word, int m, int alphabetSize, int badChars[]) {
+	int i;
+	for (i = 0; i < alphabetSize; i++)
+		badChars[i] = m + 1;
+	for (i = 0; i < alphabetSize; i++)
+		badChars[(int) word[i]] = m - i;
+}
+	
+int Quick_Search_algorithm(const char *word, int m, const char *text, int n, int alphabetSize) {
+	int j;
+	int badChars[alphabetSize];
+	int nbOcc = 0;
+	
+	preProcesssing_Bad_Chars_Shift_Quick_Search_algorithm(word, m, alphabetSize, badChars);
+	
+	j = 0;
+	while (j <= n - m) {
+		if (memcmp(text + j, word, (size_t) m) == 0)
+			nbOcc++;
+		j += badChars[(int) text[j + m]];
 	}
 	
 	return nbOcc;
