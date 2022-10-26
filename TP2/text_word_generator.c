@@ -2,24 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-
-#define FILENAME "./text.txt"
-
+	
 /**
  * Écrire un premier générateur pseudo-aléatoire de texte permettant de stocker
  * dans des fichiers des textes d’une longueur donnée sur un alphabet de taille donnée.
  * Utiliser ce générateur pour produire des textes de longueur 500 000 sur des alphabets de taille 2, 4, 20 et 70.
 */
-void generator1(const char *filename, size_t length_text, size_t length_alphabet);
-
+void text_generator(const char *filename, size_t length_text, size_t length_alphabet);
+	
 /**
  * Écrire un second générateur pseudo-aléatoire de mots permettant de stocker dans des fichiers un nombre de mots donné, d’une longueur donnée sur un alphabet de taille donnée.
  * Utiliser ce générateur pour produire des ensembles de 100 mots de longueur 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 40 et 50 sur des alphabets de taille 2, 4, 20 et 70.
  * Chaque mot écrit dans un fichier est séparé un par separator
 */
-void generator2(const char *filename, size_t nb_word, size_t length_word, size_t length_alphabet, const char *separator);
-
-void generator1(const char *filename, size_t length_text, size_t length_alphabet) {
+void word_generator(const char *filename, size_t nb_word, size_t length_word, size_t length_alphabet, const char *separator);
+	
+void text_generator(const char *filename, size_t length_text, size_t length_alphabet) {
 	assert(filename != NULL);
 	assert(length_text > 0);
 	assert(length_alphabet >= 2 && length_alphabet <= 70);
@@ -42,8 +40,8 @@ void generator1(const char *filename, size_t length_text, size_t length_alphabet
 	}
 	fprintf(stdout, "Text generated in %s\n", filename);
 }
-
-void generator2(const char *filename, size_t nb_word, size_t length_word, size_t length_alphabet, const char *separator) {
+	
+void word_generator(const char *filename, size_t nb_word, size_t length_word, size_t length_alphabet, const char *separator) {
 	assert(filename != NULL);
 	assert(length_word >= 4 && length_word <= 40);
 	assert(length_alphabet >= 2 && length_alphabet <= 70);
@@ -80,13 +78,13 @@ int main(void) {
 	
 	size_t length_text = 500000;
 	size_t length_alphabet = 70;
-	generator1(FILENAME, length_text, length_alphabet);
+	text_generator("./test1.txt", length_text, length_alphabet);
 
 	size_t nb_word = 10;
 	size_t length_word = 4;
 	length_alphabet = 2;
 	const char *separator = " ";
-	generator2("./test2.txt", nb_word, length_word, length_alphabet, separator);
+	word_generator("./test2.txt", nb_word, length_word, length_alphabet, separator);
 	
 	return EXIT_SUCCESS;
 }
