@@ -29,7 +29,6 @@ int main(void) {
 	size_t text_alphabet_length_file = 70;
 	char *text_buffer = text_generator(text_filename, text_length_file, text_alphabet_length_file);
 	// printf("text generator : %s\n", text_buffer);
-	free(text_buffer);
 	
 	const char *word_filename = "./word.txt";
 	size_t nb_word = 10;
@@ -46,14 +45,14 @@ int main(void) {
 	/* Lancement des algorithmes */
 	/*---------------------------*/
 	
-	const char *text = text_buffer;
-	char *word = NULL;
+	const char *text = text_buffer; // "atcgagactactgacta";
+	const char *word = NULL;
 	int text_length = (int) strlen(text);
 	int word_length = 0;
 	
 	for (size_t i = 0; i < nb_word; i++) {
 		
-		word = word_buffer[i];
+		word = word_buffer[i]; // "gac"
 		word_length = (int) strlen(word);
 		printf("== text : %s (length : %d)\n", text, text_length);
 		printf("== word : %s (length : %d)\n", word, word_length);
@@ -97,11 +96,22 @@ int main(void) {
 				Morris_Pratt_algorithm,
 				"Morris_Pratt_algorithm",
 				word, word_length, text, text_length);
-		
+		/*
 		print_result_and_measured_time2(
 				Boyer_Moore_algorithm,
 				"Boyer_Moore_algorithm",
 				word, word_length, text, text_length, (int) word_alphabet_length_file);
+		*/
+		/*print_result_and_measured_time2(
+				Horspool_algorithm,
+				"Horspool_algorithm",
+				word, word_length, text, text_length, (int) word_alphabet_length_file + 1);*/
+		
+		print_result_and_measured_time2(
+				Quick_Search_algorithm,
+				"Quick_Search_algorithm",
+				word, word_length, text, text_length, (int) word_alphabet_length_file + 1);
+		//printf("\n\n");
 	}
 	
 	/*---------------------------*/
@@ -372,7 +382,7 @@ void preProcesssing_Last_Occurence_Boyer_Moore_algorithm(const char *word, int m
 	int i;
 	for (i = 0; i < alphabetSize; i++)
 		lastOcc[i] = m;
-	for (i = 0; i <= m - 2; i++)
+	for (i = 0; i < m - 1; i++)
 		lastOcc[(int) word[i]] = m - 1 - i;
 }
 	
@@ -461,7 +471,7 @@ void preProcesssing_Bad_Chars_Shift_Quick_Search_algorithm(const char *word, int
 	int i;
 	for (i = 0; i < alphabetSize; i++)
 		badChars[i] = m + 1;
-	for (i = 0; i < alphabetSize; i++)
+	for (i = 0; i < m; i++)
 		badChars[(int) word[i]] = m - i;
 }
 	
@@ -548,10 +558,8 @@ char ** word_generator(const char *filename, size_t nb_word, size_t length_word,
 			word[j] = (char) ((size_t) rand() % ((max + 1) - min) + min);
 			j++;
 		}
-		for (size_t k = 0; k < strlen(separator); k++) {
-			word[j++] = separator[k];
-		}
 		fprintf(fout, "%s", word);
+		fprintf(fout, "%s", separator);
 		len_strbuf = (strlen(word) + 1) * sizeof(char);
 		buffer[i] = malloc(len_buf);
 		if (buffer[i] == NULL) { perror("malloc"); exit(EXIT_FAILURE); }

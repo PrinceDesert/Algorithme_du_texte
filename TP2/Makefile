@@ -9,4 +9,4 @@ all : $(EXE)
 	$(CC) $(CFLAGS) -I ./include $< -o $@
 
 clean :
-	rm -f $(EXE)
+	rm -f $(EXE) *.txt
