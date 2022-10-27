@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <assert.h>
+#include <algorithm_word_search.h>
 	
 /**
  * Algorithmes de recherche exacte d’un mot dans un texte
@@ -15,126 +17,109 @@
 // test si trop à droite : que si occurence
 // boucle rapide : décale la fenetre à la premier occurence de la lettre en gros c'est l'index qui se décale à une potentiel occurence
 	
-// algorithme naif, avec boucle interne, sans boucle rapide, sans sentinelle (word = mot à trouver) pour compter le nb d'occurence de word dans text
-int naive_algorithm_inner_loop(const char *word, int m, const char *text, int n);
-// algorithme naif, avec boucle interne, avec boucle rapide, sans sentinelle pour compter le nb d'occurence de word dans text
-int naive_algorithm_inner_loop_quick_loop(const char *word, int m, const char *text, int n);
-// algorithme naif, avec boucle interne, avec boucle rapide, avec sentinelle pour compter le nb d'occurence de word dans text
-int naive_algorithm_inner_loop_quick_loop_sentinel(const char *word, int m, const char *text, int n);
-	
-// algorithme naif, avec strncmp, sans boucle rapide, sans sentinelle pour compter le nb d'occurence de word dans text 
-int naive_algorithm_strncmp(const char *word, int m, const char *text, int n);
-// algorithme naif, avec strncmp, avec boucle rapide, sans sentinelle pour compter le nb d'occurence de word dans text 
-int naive_algorithm_strncmp_quick_loop(const char *word, int m, const char *text, int n);
-// algorithme naif, avec strncmp, avec boucle rapide, avec sentinelle pour compter le nb d'occurence de word dans text
-int naive_algorithm_strncmp_quick_loop_sentinel(const char *word, int m, const char *text, int n);
-	
-void preProcesssing_Morris_Pratt_algorithm(const char *word, int m, int goodPrefix[]);
-int Morris_Pratt_algorithm(const char *word, int m, const char *text, int n);
-
-// algorithme de Knuth-Morris-Pratt
-void preProcesssing_Knuth_Morris_Pratt_algorithm(const char *word, int m, int bestPrefix[]);
-int Knuth_Morris_Pratt_algorithm(const char *word, int m, const char *text, int n);
-	
-// algorithme de Boyer-Moore
-void preProcesssing_Last_Occurence_Boyer_Moore_algorithm(const char *word, int m, int alphabetSize, int lastOcc[]);
-void preProcesssing_Suffixes_Boyer_Moore_algorithm(const char *word, int m, int goodSuffixes[]);
-void preProcesssing_Good_Suffixes_Boyer_Moore_algorithm(const char *word, int m, int goodSuffixes[]);
-int Boyer_Moore_algorithm(const char *word, int m, const char *text, int n, int alphabetSize);
-
-// algorithme de Horspool
-int Horspool_algorithm(const char *word, int m, const char *text, int n, int alphabetSize);
-
-// algorithme Quick Search
-void preProcesssing_Bad_Chars_Shift_Quick_Search_algorithm(const char *word, int m, int alphabetSize, int badChars[]);
-int Quick_Search_algorithm(const char *word, int m, const char *text, int n, int alphabetSize);
-	
-// utils
-int findNextIndex(const char *word, size_t word_len, size_t start, char c);
-char *substr(const char *src, size_t pos, size_t len);
-int max(int a, int b);
-int min(int a, int b);
-	
-// un generateur de texte, un generateur de mot en bash
-// generer les courbes avec un autre outil
-	
-void print_result_and_measured_time(
-	int (*function)(const char *word, int m, const char *text, int n),
-	const char *function_name,
-	const char *word, int m, const char *text, int n);
-
-void print_result_and_measured_time(
-	int (*function)(const char *word, int m, const char *text, int n),
-	const char *function_name,
-	const char *word, int m, const char *text, int n) {
-	clock_t start_t = clock();
-	int nbOcc = (*function)(word, m, text, n);
-	clock_t end_t = clock();
-	double time = ((double) (end_t - start_t)) / CLOCKS_PER_SEC;
-	printf("== %s : %d == (%f sec)\n", function_name, nbOcc, time);
-}
 	
 int main(void) {
 	
-	const char *text = "atcgcgatgctag";
-	const char *word = "gc";
+	/*---------------------------------------------------------------------*/
+	/* Initilisation du texte et de l'ensembles des mots dans leur fichier */
+	/*---------------------------------------------------------------------*/
+	
+	const char *text_filename = "./text.txt"; 
+	size_t text_length_file = 100;
+	size_t text_alphabet_length_file = 70;
+	char *text_buffer = text_generator(text_filename, text_length_file, text_alphabet_length_file);
+	// printf("text generator : %s\n", text_buffer);
+	free(text_buffer);
+	
+	const char *word_filename = "./word.txt";
+	size_t nb_word = 10;
+	size_t word_length_file = 4;
+	size_t word_alphabet_length_file = 4;
+	const char *word_separator = " ";
+	char **word_buffer = word_generator(word_filename, nb_word, word_length_file, word_alphabet_length_file, word_separator);
+	printf("word generator : \n");
+	for (size_t i = 0; i < nb_word; i++) {
+		// printf("word[%lu] = %s\n", i, word_buffer[i]);
+	}
+	
+	/*---------------------------*/
+	/* Lancement des algorithmes */
+	/*---------------------------*/
+	
+	const char *text = text_buffer;
+	char *word = NULL;
 	int text_length = (int) strlen(text);
-	int word_length = (int) strlen(word);
+	int word_length = 0;
 	
-	printf("== text : %s (length : %d)\n", text, text_length);
-	printf("== word : %s (length : %d)\n", word, word_length);
-	
-	print_result_and_measured_time(
-				naive_algorithm_inner_loop,
-				"naive_algorithm_inner_loop",
-				word, word_length, text, text_length);
-				
-	print_result_and_measured_time(
-			naive_algorithm_inner_loop_quick_loop,
-			"naive_algorithm_inner_loop_quick_loop",
-			word, word_length, text, text_length);
-	
-	print_result_and_measured_time(
-			naive_algorithm_inner_loop_quick_loop_sentinel,
-			"naive_algorithm_inner_loop_quick_loop_sentinel CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
-			word, word_length, text, text_length);
-	
-	print_result_and_measured_time(
-			naive_algorithm_strncmp,
-			"naive_algorithm_strncmp",
-			word, word_length, text, text_length);
-	
-	print_result_and_measured_time(
-			naive_algorithm_strncmp_quick_loop,
-			"naive_algorithm_strncmp_quick_loop",
-			word, word_length, text, text_length);
-	
-	print_result_and_measured_time(
-			naive_algorithm_strncmp_quick_loop_sentinel,
-			"naive_algorithm_strncmp_quick_loop_sentinel CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
-			word, word_length, text, text_length);
-	
-	print_result_and_measured_time(
-			naive_algorithm_strncmp_quick_loop_sentinel,
-			"naive_algorithm_strncmp_quick_loop_sentinel CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
-			word, word_length, text, text_length);
-	
-	// text = "GCATCGCAGAGAGTATACAGTACG";
-	// word = "GCAGAGAG";
-	print_result_and_measured_time(
-			Morris_Pratt_algorithm,
-			"Morris_Pratt_algorithm",
-			word, word_length, text, text_length);
+	for (size_t i = 0; i < nb_word; i++) {
 		
-	clock_t start_t = clock();
-	int nbOcc = Boyer_Moore_algorithm(word, word_length, text, text_length, 13);
-	clock_t end_t = clock();
-	double time = ((double) (end_t - start_t)) / CLOCKS_PER_SEC;
-	printf("== %s : %d == (%f sec)\n", "Boyer_Moore_algorithm", nbOcc, time);
+		word = word_buffer[i];
+		word_length = (int) strlen(word);
+		printf("== text : %s (length : %d)\n", text, text_length);
+		printf("== word : %s (length : %d)\n", word, word_length);
+		
+		print_result_and_measured_time(
+					naive_algorithm_inner_loop,
+					"naive_algorithm_inner_loop",
+					word, word_length, text, text_length);
+					
+		print_result_and_measured_time(
+				naive_algorithm_inner_loop_quick_loop,
+				"naive_algorithm_inner_loop_quick_loop",
+				word, word_length, text, text_length);
+		
+		print_result_and_measured_time(
+				naive_algorithm_inner_loop_quick_loop_sentinel,
+				"naive_algorithm_inner_loop_quick_loop_sentinel CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
+				word, word_length, text, text_length);
+		
+		print_result_and_measured_time(
+				naive_algorithm_strncmp,
+				"naive_algorithm_strncmp",
+				word, word_length, text, text_length);
+		
+		print_result_and_measured_time(
+				naive_algorithm_strncmp_quick_loop,
+				"naive_algorithm_strncmp_quick_loop",
+				word, word_length, text, text_length);
+		
+		print_result_and_measured_time(
+				naive_algorithm_strncmp_quick_loop_sentinel,
+				"naive_algorithm_strncmp_quick_loop_sentinel CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
+				word, word_length, text, text_length);
+		
+		print_result_and_measured_time(
+				naive_algorithm_strncmp_quick_loop_sentinel,
+				"naive_algorithm_strncmp_quick_loop_sentinel CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
+				word, word_length, text, text_length);
+		
+		print_result_and_measured_time(
+				Morris_Pratt_algorithm,
+				"Morris_Pratt_algorithm",
+				word, word_length, text, text_length);
+		
+		print_result_and_measured_time2(
+				Boyer_Moore_algorithm,
+				"Boyer_Moore_algorithm",
+				word, word_length, text, text_length, (int) word_alphabet_length_file);
+	}
+	
+	/*---------------------------*/
+	/* Libération des ressources */
+	/*---------------------------*/
+	free(text_buffer);
+	for (size_t i = 0; i < nb_word; i++) {
+		free(word_buffer[i]);
+	}
+	free(word_buffer);
 	
 	
 	return EXIT_SUCCESS;
 }
+	
+/*----------------------------------------------------------*/
+/*					LES ALGORITHMES NAIVES					*/
+/*----------------------------------------------------------*/
 	
 int naive_algorithm_inner_loop(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
@@ -154,7 +139,10 @@ int naive_algorithm_inner_loop(const char *word, int m, const char *text, int n)
 	return nbOcc;
 }
 	
-// utilise findNextIndex pour passer à la prochaine occurence pour décaler la fenetre jusqu'a la prochaine occurence trouve ( = boucle rapide)
+/**
+ * Utilisation de la fonction util findNextIndex pour passer à la prochaine occurence pour 
+ * décaler la fenêtre de cible jusqu'a la prochaine occurence trouvée (=boucle rapide)
+*/
 int naive_algorithm_inner_loop_quick_loop(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	int i, j = 0;
@@ -173,7 +161,9 @@ int naive_algorithm_inner_loop_quick_loop(const char *word, int m, const char *t
 	return nbOcc;
 }
 	
-// la sentinelle sert à ne pas tester à chaque fois si on est en fin de mot
+/**
+ * la sentinelle sert à ne pas tester à chaque fois si on est en fin de mot
+*/
 int naive_algorithm_inner_loop_quick_loop_sentinel(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	int i, j = 0;
@@ -214,7 +204,10 @@ int naive_algorithm_inner_loop_quick_loop_sentinel(const char *word, int m, cons
 	return nbOcc;
 }
 	
-// avec strncmp au lieu de comparer 1 par 1, on utilise strncmp mais on garde la boucle principale
+/**
+ * Utilisation de  strncmp au lieu de comparer lettre par lettre comme dans la méthode naive, 
+ * mais on garde la boucle principale
+*/
 int naive_algorithm_strncmp(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
 	int i, j;
@@ -296,6 +289,9 @@ int naive_algorithm_strncmp_quick_loop_sentinel(const char *word, int m, const c
 	return nbOcc;
 }
 	
+/*----------------------------------------------------------*/
+/*					LES ALGORITHMES COMPLEXES				*/
+/*----------------------------------------------------------*/
 	
 void preProcesssing_Morris_Pratt_algorithm(const char *word, int m, int goodPrefix[]) {
 	int i, j;
@@ -486,6 +482,97 @@ int Quick_Search_algorithm(const char *word, int m, const char *text, int n, int
 	return nbOcc;
 }
 	
+/*----------------------------------------------------------------------*/
+/*					GENERATEUR DE TEXTE ET DE MOT(S)					*/
+/*----------------------------------------------------------------------*/
+	
+char * text_generator(const char *filename, size_t length_text, size_t length_alphabet) {
+	assert(filename != NULL);
+	assert(length_text > 0);
+	assert(length_alphabet >= 2 && length_alphabet <= 70);
+	FILE *fout = fopen(filename, "wb");
+	if (fout == NULL) {
+		fprintf(stderr, "Cannot open %s to write\n", filename);
+		exit(EXIT_FAILURE);
+	}
+	size_t min = (size_t) '!';
+	size_t max = min + (length_alphabet-1);
+	char c = '\0';
+	size_t i = 0;
+	char *buffer = (char *) calloc(length_text + 1, sizeof(char));
+	if (buffer == NULL) {
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
+	while (i < length_text) {
+		c = (char) ((size_t) rand() % ((max + 1) - min) + min);
+		buffer[i] = c;
+		// fprintf(fout, "%c", c);
+		i++;
+	}
+	buffer[i] = '\0';
+	fprintf(fout, "%s", buffer);
+	// printf("buffer : %s(%lu) - i : %lu - zero terminal : %d\n", buffer, strlen(buffer), i, buffer[strlen(buffer)] == '\0');
+	if (fclose(fout) != 0) {
+		fprintf(stderr, "Cannot close %s\n", filename);
+		exit(EXIT_FAILURE);
+	}
+	fprintf(stdout, "Text generated in %s\n", filename);
+	return buffer;
+}
+	
+char ** word_generator(const char *filename, size_t nb_word, size_t length_word, size_t length_alphabet, const char *separator) {
+	assert(filename != NULL);
+	assert(length_word >= 4 && length_word <= 40);
+	assert(length_alphabet >= 2 && length_alphabet <= 70);
+	assert(separator != NULL);
+	FILE *fout = fopen(filename, "wb");
+	if (fout == NULL) {
+		fprintf(stderr, "Cannot open %s to write\n", filename);
+		exit(EXIT_FAILURE);
+	}
+	size_t min = (size_t) '!';
+	size_t max = min + (length_alphabet-1);
+	size_t i = 0;
+	size_t j = 0;
+	char word[length_word+strlen(separator)+1];
+	char **buffer;
+	size_t len_buf;
+	size_t len_strbuf;
+	len_buf = nb_word * sizeof(char *);
+	buffer = (char **) malloc(len_buf);
+	if (buffer == NULL) { perror("malloc"); exit(EXIT_FAILURE); }
+	while (i < nb_word) {
+		memset(word, '\0', sizeof(word));
+		while (j < length_word) {
+			word[j] = (char) ((size_t) rand() % ((max + 1) - min) + min);
+			j++;
+		}
+		for (size_t k = 0; k < strlen(separator); k++) {
+			word[j++] = separator[k];
+		}
+		fprintf(fout, "%s", word);
+		len_strbuf = (strlen(word) + 1) * sizeof(char);
+		buffer[i] = malloc(len_buf);
+		if (buffer[i] == NULL) { perror("malloc"); exit(EXIT_FAILURE); }
+		int bytes = snprintf(buffer[i], len_strbuf, "%s", word);
+		if (bytes < 0 ||  bytes >= (int) len_strbuf) { perror("snprintf"); exit(EXIT_FAILURE); }
+		j = 0;
+		i++;
+	}
+	fprintf(fout, "%s", word);
+	if (fclose(fout) != 0) {
+		fprintf(stderr, "Cannot close %s\n", filename);
+		exit(EXIT_FAILURE);
+	}
+	fprintf(stdout, "Words generated in %s\n", filename);
+	return buffer;
+}
+	
+/*----------------------------------------------------------*/
+/*					FONCTIONS UTILITAIRES					*/
+/*----------------------------------------------------------*/
+	
 int findNextIndex(const char *word, size_t word_len, size_t start, char c) {
 	if (word == NULL || word_len == 0) return -1;
 	// printf("findNextIndex : word %s(%lu) - %lu - %c\n", word, word_len, start, c);
@@ -522,3 +609,26 @@ int max(int a, int b) {
 int min(int a, int b) {
 	return a < b ? a : b;
 }
+	
+void print_result_and_measured_time(
+	int (*function)(const char *word, int m, const char *text, int n),
+	const char *function_name,
+	const char *word, int m, const char *text, int n) {
+	clock_t start_t = clock();
+	int nbOcc = (*function)(word, m, text, n);
+	clock_t end_t = clock();
+	double time = ((double) (end_t - start_t)) / CLOCKS_PER_SEC;
+	printf("== %s : %d == (%f sec)\n", function_name, nbOcc, time);
+}
+	
+void print_result_and_measured_time2(
+	int (*function)(const char *word, int m, const char *text, int n, int alphabetSize),
+	const char *function_name,
+	const char *word, int m, const char *text, int n, int alphabetSize) {
+	clock_t start_t = clock();
+	int nbOcc = (*function)(word, m, text, n, alphabetSize);
+	clock_t end_t = clock();
+	double time = ((double) (end_t - start_t)) / CLOCKS_PER_SEC;
+	printf("== %s : %d == (%f sec)\n", function_name, nbOcc, time);
+}
+

@@ -6,7 +6,7 @@ EXE = algorithm_word_search text_word_generator
 all : $(EXE)
 
 % : %.c
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) -I ./include $< -o $@
 
 clean :
 	rm -f $(EXE)
