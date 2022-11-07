@@ -10,7 +10,6 @@
 */
 
 // measure time : https://www.geeksforgeeks.org/how-to-measure-time-taken-by-a-program-in-c/
-
 // avec sentinelle : concaténation du mot à la fin
 // trop à droite : si le mot a comparé dépasse la fin du texte
 // test si trop à droite : que si occurence
