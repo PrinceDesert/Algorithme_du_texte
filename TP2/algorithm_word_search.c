@@ -11,12 +11,10 @@
 
 // measure time : https://www.geeksforgeeks.org/how-to-measure-time-taken-by-a-program-in-c/
 
-// avec sentinelle : concatene le mot à la fin
-	
+// avec sentinelle : concaténation du mot à la fin
 // trop à droite : si le mot a comparé dépasse la fin du texte
 // test si trop à droite : que si occurence
 // boucle rapide : décale la fenetre à la premier occurence de la lettre en gros c'est l'index qui se décale à une potentiel occurence
-	
 	
 int main(void) {
 	
@@ -202,8 +200,8 @@ int naive_algorithm_inner_loop_quick_loop_sentinel(const char *word, int m, cons
 			*/
 			nbOcc++;
 			/**
-			 * METTRE un test si j est arrivée en fin de texte
-			 * Demander au prof si la sentinelle, si y'a une occurence trouvé alors il faut vérifier si on est en fin de texte pour les occurences suivantes
+			 * Mettre un test si j est arrivée en fin de texte
+			 * si y'a une occurence trouvé alors il faut vérifier si on est en fin de texte pour les occurences suivantes
 			*/
 		}
 		j++;
@@ -287,8 +285,8 @@ int naive_algorithm_strncmp_quick_loop_sentinel(const char *word, int m, const c
 		if (strncmp(text_substr, word, strlen(word)) == 0) {
 			nbOcc++;
 			/**
-			 * METTRE un test si j est arrivée en fin de texte
-			 * Demander au prof si la sentinelle, si y'a une occurence trouvé alors il faut vérifier si on est en fin de texte pour les occurences suivantes
+			 * Mettre un test si j est arrivée en fin de texte
+			 * si y'a une occurence trouvé alors il faut vérifier si on est en fin de texte pour les occurences suivantes
 			*/
 		}
 		j++;
