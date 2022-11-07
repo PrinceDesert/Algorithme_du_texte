@@ -66,7 +66,7 @@ int main(void) {
 		
 		print_result_and_measured_time(
 				naive_algorithm_inner_loop_quick_loop_sentinel,
-				"naive_algorithm_inner_loop_quick_loop_sentinel CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
+				"naive_algorithm_inner_loop_quick_loop_sentinel (C'est normal que 1 car le test d'arrêt s'arrrête à la première occurence)",
 				word, word_length, text, text_length);
 		
 		print_result_and_measured_time(
@@ -81,12 +81,12 @@ int main(void) {
 		
 		print_result_and_measured_time(
 				naive_algorithm_strncmp_quick_loop_sentinel,
-				"naive_algorithm_strncmp_quick_loop_sentinel CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
+				"naive_algorithm_strncmp_quick_loop_sentinel (C'est normal que 1 car le test d'arrêt s'arrrête à la première occurence)",
 				word, word_length, text, text_length);
 		
 		print_result_and_measured_time(
 				naive_algorithm_strncmp_quick_loop_sentinel,
-				"naive_algorithm_strncmp_quick_loop_sentinel CEST NORMAL QUE 1 A DEMANDER AU PROF CE QUI A ECRIT DANS LE COMMENTAIRE DU CODE POUR LE TEST DARRET",
+				"naive_algorithm_strncmp_quick_loop_sentinel (C'est normal que 1 car le test d'arrêt s'arrrête à la première occurence)",
 				word, word_length, text, text_length);
 		
 		print_result_and_measured_time(
