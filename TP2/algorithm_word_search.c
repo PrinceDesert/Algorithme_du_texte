@@ -125,9 +125,9 @@ int main(void) {
 	return EXIT_SUCCESS;
 }
 	
-/*----------------------------------------------------------*/
-/*					LES ALGORITHMES NAIVES					*/
-/*----------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*                                      LES ALGORITHMES NAIVES                                      */
+/*--------------------------------------------------------------------------------------------------*/
 	
 int naive_algorithm_inner_loop(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
@@ -297,9 +297,9 @@ int naive_algorithm_strncmp_quick_loop_sentinel(const char *word, int m, const c
 	return nbOcc;
 }
 	
-/*----------------------------------------------------------*/
-/*					LES ALGORITHMES COMPLEXES				*/
-/*----------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------*/
+/*                                      LES ALGORITHMES COMPLEXES                                      */
+/*-----------------------------------------------------------------------------------------------------*/
 	
 void preProcesssing_Morris_Pratt_algorithm(const char *word, int m, int goodPrefix[]) {
 	int i, j;
@@ -490,9 +490,9 @@ int Quick_Search_algorithm(const char *word, int m, const char *text, int n, int
 	return nbOcc;
 }
 	
-/*----------------------------------------------------------------------*/
-/*					GENERATEUR DE TEXTE ET DE MOT(S)					*/
-/*----------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------*/
+/*                                      GENERATEUR DE TEXTE ET DE MOT(S)                                      */
+/*------------------------------------------------------------------------------------------------------------*/
 	
 char * text_generator(const char *filename, size_t length_text, size_t length_alphabet) {
 	assert(filename != NULL);
@@ -575,9 +575,9 @@ char ** word_generator(const char *filename, size_t nb_word, size_t length_word,
 	return buffer;
 }
 	
-/*----------------------------------------------------------*/
-/*					FONCTIONS UTILITAIRES					*/
-/*----------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------------------*/
+/*                                      FONCTIONS UTILITAIRES                                      */
+/*-------------------------------------------------------------------------------------------------*/
 	
 int findNextIndex(const char *word, size_t word_len, size_t start, char c) {
 	if (word == NULL || word_len == 0) return -1;
