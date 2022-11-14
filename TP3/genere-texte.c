@@ -31,7 +31,7 @@ char * genere_texte(size_t taille_texte, size_t taille_alphabet) {
 		i++;
 	}
 	buffer[i] = '\0';
-	fprintf(stdout, "%s", buffer);
+	fprintf(stdout, "%s\n", buffer);
 	return buffer;
 }
 	

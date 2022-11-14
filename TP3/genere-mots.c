@@ -48,6 +48,7 @@ char ** genere_mots(size_t nb_mot, size_t min_taille_mot, size_t max_taille_mot,
 		j = 0;
 		i++;
 	}
+	fprintf(stdout, "\n");
 	return buffer;
 }
 	
