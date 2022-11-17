@@ -14,13 +14,7 @@ ac-matrice : ac-matrice.o transition_matrix_trie.o
 	$(CC) -o $@ $^
 
 %.o : %.c
-	$(CC) -c $(wildcard *.c) $(CFLAGS)
-
-transition_matrix_trie.o : transition_matrix_trie.c
-	$(CC) -c $< $(CFLAGS) -I inc
-	
-hash_table_trie.o : hash_table_trie.c
-	$(CC) -c $< $(CFLAGS) -I inc
+	$(CC) -c $(wildcard *.c) $(CFLAGS) -I inc
 
 clean :
 	rm -f $(wildcard *.o) $(EXE)
