@@ -4,16 +4,14 @@
 #include <ctype.h>
 #include <limits.h>
 #include <transition_matrix_trie.h>
-
+	
 void printTransition(Trie trie);
 void freeTrie(Trie t);
 Trie prefix(unsigned char *w); // les préfixes du mot w
 Trie suffix(unsigned char *w); // les suffixes du mot w
 // Trie factor(unsigned char *w); // les facteurs du mot w
-
+	
 #define LENGTH_ASCII_CHARS UCHAR_MAX + 1
-
-// demander comment construit matrice transition
 	
 Trie createTrie(int maxNode) {
 	Trie t = (Trie) malloc(sizeof(struct _trie));
@@ -99,7 +97,7 @@ int isInTrie(Trie trie, unsigned char *w) {
 	printf("%s i=%lu\n", w, i);
 	return trie->finite[i] == '1';
 }
-
+	
 void freeTrie(Trie t) {
 	if (t != NULL) {
 		for (size_t i = 0; i < (size_t) t->maxNode; i++) {
@@ -109,7 +107,7 @@ void freeTrie(Trie t) {
 		free(t->finite);
 	}
 }
-
+	
 Trie prefix(unsigned char *w) {
 	if (w == NULL) return NULL;
 	size_t w_len = strlen((const char *) w); 
@@ -123,11 +121,11 @@ Trie prefix(unsigned char *w) {
 	}
 	return t;
 }
-
+	
 Trie suffix(unsigned char *w) {
 	if (w == NULL) return NULL;
 	size_t w_len = strlen((const char *) w); 
-	int maxNode = (int) (strlen(w_len << 1);
+	int maxNode = (int) (w_len << 1);
 	Trie t = createTrie(maxNode);
 	for (long int i = (long int) (w_len - 1); i >= 0; i--) {
 		const char *suffix = (const char *) w + i;
@@ -139,12 +137,13 @@ Trie suffix(unsigned char *w) {
 	}
 	return t;
 }
+	
 /*
  * factor
 Trie factor(unsigned char *w) {
 	return NULL;
 }*/
-
+	
 void printTransition(Trie trie) {
 	printf("=======================\n");
 	printf("== TRANSITION MATRIX ==\n");
@@ -169,7 +168,7 @@ void printTransition(Trie trie) {
 	}
 	printf("\n");
 }
-
+	
 int main(void) {
 	int maxNode = 20;
 	Trie trie = createTrie(maxNode);
@@ -191,3 +190,4 @@ int main(void) {
 	freeTrie(trie);
 	return EXIT_SUCCESS;
 }
+	
