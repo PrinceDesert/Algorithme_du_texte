@@ -4,18 +4,21 @@
 #include <errno.h>
 #include <limits.h>
 #include <ctype.h>
-#include "./inc/transition_matrix_trie.h"
+#include <transition_list.h>
+#include <transition_matrix_trie.h>
+	
+	
+// La liste des transitions
+// struct transition {int startNode, int endNode, char letter}
+// *transition = list des transitions
+// premier 
+// suivant
 
-/*	
-struct _transition {
-	int startNode,
-	char letter,
-	int endNode
-};
-// Liste des transitions utilisés par la fonction compéter de aho-corasick
-typedef struct _transition *Transitions;
-*/
+// file d'entier p est l'état suivant de e ou a est la lettre de transition
+// enfiler, defiler
 
+// la fonction sup regarde le plus long suffixe pour trouver l'état où atterir
+	
 int ac_matrice(const char *filename_words, const char *filename_text);
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
@@ -98,29 +101,92 @@ void pre_ac(const char *x, int k) {
 	}
 	// La fonction entrer(entrer un état) est représenter par insertInTrie
 	insertInTrie(trie, (unsigned char *) x);
+	complete(0);
 }
 	
 // e = num état
-int completer(int e) {
+int complete(int e) {
 	//aho_queue q = new_aho_queue();
 	// crée une liste des transitions de e
-	Transitions transitions;
-	transitions = (Transitions) malloc(sizeof(struct _transition));
-	if (t == NULL) {
-		perror("malloc");
-		return;
+	
+	// f = file vide
+	Queue f;
+	f = initQueue();
+	// l = liste des transitions (e, a, p) telles que p != e (e & p = numéro de noeud, a = lettre)
+	int p, r;
+	unsigned char a;
+	List precedent = NULL;
+	List transition = NULL;
+	for (int j = 0; j < LENGTH_ASCII_CHARS; j++) {
+		if (trie->transition[0][j] != 0) {
+			p = trie->transition[0][j];
+			transition = (List) malloc(sizeof(struct _list));
+			if (transition == NULL) {
+				perror("malloc");
+				exit(EXIT_FAILURE);
+			}
+			transition->startNode = e;
+			transition->targetNode = p;
+			a = (unsigned char) j;
+			transition->letter = a;
+			transition->next = precedent != NULL ? transition : NULL;
+			precedent = transition;
+		}
+	}
+	List l = precedent;
+	List first = NULL;
+	// tant que l est non vide faire
+	while (l != NULL) {
+		// (r,a,p) = premier(l)
+		first = l;
+		r = first->startNode;
+		a = first->letter;
+		p = first->endNode;
+		// l = suivant(l)
+		l = l->next;
+		// enfile(f, p)
+		queuePush(queue, p);
+		// sup(p) = e
+	}
+	// tant que f est non vide faire
+	while (!queueIsEmpty(f)) {
+		r = queuePop(f);
+		// l = liste des transitions (r,a,p)
+		// récupère les transitions ayant pour noeud de départ r
+		precedent = NULL;
+		for (int j = 0; j < LENGTH_ASCII_CHARS; j++) {
+			if (trie->transition[r][j] != 0) {
+				p = trie->transition[r][j];
+				a = (unsigned char) j;
+				transition = (List) malloc(sizeof(struct _list));
+				if (transition == NULL) {
+					perror("malloc");
+					exit(EXIT_FAILURE);
+				}
+				transition->startNode = r;
+				transition->letter = a;
+				transition->targetNode = p;
+				transition->next = precedent != NULL ? transition : NULL;
+				precedent = transition;
+			}
+		}
+		l = precendent;
+		// tant que l est non vide faire
+		while (l != NULL) {
+			// (r,a,p) = premier(l)
+			first = l;
+			r = first->startNode;
+			a = first->letter;
+			p = first->endNode;
+			// l = suivant(l)
+			l = l->next;
+			// enfile(f, p)
+			queuePush(queue, p);
+			// s = sup(r)
+			// int s = 
+			// faire la fonction de sup
+		}
 	}
 	return 0;
 }
-
-// La liste des transitions
-// struct transition {int startNode, int endNode, char letter}
-// *transition = list des transitions
-// premier 
-// suivant
-
-// file d'entier p est l'état suivant de e ou a est la lettre de transition
-// enfiler, defiler
-
-// la fonction sup regarde le plus long suffixe pour trouver l'état où atterir
 

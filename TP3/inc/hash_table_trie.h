@@ -1,14 +1,7 @@
 #ifndef _HASH_TABLE_TRIE_H
 #define _HASH_TABLE_TRIE_H
 	
-// Table de hachage
-struct _list {
-	int startNode, /* etat de depart de la transition */
-	targetNode; /* cible de la transition */
-	unsigned char letter; /* etiquette de la transition */
-	struct _list *next; /* maillon suivant */
-};
-typedef struct _list *List;
+#include "transition_list.h"
 	
 struct _trie {
 	int maxNode; /* Nombre maximal de noeuds du trie */

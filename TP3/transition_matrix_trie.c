@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <limits.h>
 #include <transition_matrix_trie.h>
 	
 void printTransition(Trie trie);
@@ -11,7 +10,6 @@ Trie prefix(unsigned char *w); // les préfixes du mot w
 Trie suffix(unsigned char *w); // les suffixes du mot w
 // Trie factor(unsigned char *w); // les facteurs du mot w
 	
-#define LENGTH_ASCII_CHARS UCHAR_MAX + 1
 	
 Trie createTrie(int maxNode) {
 	Trie t = (Trie) malloc(sizeof(struct _trie));
