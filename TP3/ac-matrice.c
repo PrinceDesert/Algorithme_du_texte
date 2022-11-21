@@ -6,6 +6,16 @@
 #include <ctype.h>
 #include "./inc/transition_matrix_trie.h"
 
+/*	
+struct _transition {
+	int startNode,
+	char letter,
+	int endNode
+};
+// Liste des transitions utilisés par la fonction compéter de aho-corasick
+typedef struct _transition *Transitions;
+*/
+
 int ac_matrice(const char *filename_words, const char *filename_text);
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
@@ -80,48 +90,28 @@ int ac_matrice(const char *filename_words, __attribute__((unused)) const char *f
 	return 0;
 }
 
-/*
 void pre_ac(const char *x, int k) {
+	int maxNode = k + 1;
 	Trie trie = createTrie(maxNode);
 	if (trie == NULL) {
 		exit(EXIT_FAILURE);
 	}
-	char *q0 = "";
-	// for i 
-	insertInTrie(trie, x);
+	// La fonction entrer(entrer un état) est représenter par insertInTrie
+	insertInTrie(trie, (unsigned char *) x);
+}
 	
-}
-
-// x le mot mot, num etat
-// δ(e, x[i]) = num état il y a la lettre x[i]
-const char* entrer(const char *x, int e) {
-	int i = 0;
-	int len_x = (int) strlen(x);
-	// j soit égale à l'indice de la lettre à faire
-	// cherche le plus long préfixe dans le trie
-	while (i < len_x && trie->transition[i][x[i]] == e) {
-		e = trie->transition[i][x[i]];
-		i++;
-	}
-	while (i < len_x) {
-		// crée un état s
-		trie->transition[i][x[i]] = trie->nextNode++;
-		e = trie->nextNode;
-		i++;
-	}
-	return x;
-}
-
 // e = num état
 int completer(int e) {
-	aho_queue q = new_aho_queue();
+	//aho_queue q = new_aho_queue();
 	// crée une liste des transitions de e
-	int *transitions = 
-	// while (notempty(l)) {
-	
-	// }
+	Transitions transitions;
+	transitions = (Transitions) malloc(sizeof(struct _transition));
+	if (t == NULL) {
+		perror("malloc");
+		return;
+	}
+	return 0;
 }
-*/
 
 // La liste des transitions
 // struct transition {int startNode, int endNode, char letter}

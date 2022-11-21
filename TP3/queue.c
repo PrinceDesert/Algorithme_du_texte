@@ -1,69 +1,71 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <queue.h>
 	
-typedef struct QueueElement {
-	int value;
-	struct QueueElement *next;
-} QueueElement;
-QueueElement *first = NULL;
-QueueElement *last = NULL;
-int nbElements = 0;
-int queueIsEmpty();
-int queueLength();
-int queueFirst();
-int queueLast();
-void queuePush(int value);
-void queuePop();
-void queueClear();
-void queueToString();
 	
 int main(void) {
-	fprintf(stdout, "Queue length : %d\n", queueLength());
+	
+	Queue queue;
+	initQueue(queue);
+	
+	fprintf(stdout, "Queue length : %d\n", queueLength(queue));
 	int nbElements = 10;
 	fprintf(stdout, "Queue push : %d  (nbElements to push)\n", nbElements);
 	for (int i = 0; i < nbElements; i++) {
-		queuePush(i+1);
+		queuePush(queue, i+1);
 	}
-	queueToString();
-	fprintf(stdout, "Queue first : %d\n", queueFirst());
-	fprintf(stdout, "Queue last : %d\n", queueLast());
+	queueToString(queue);
+	fprintf(stdout, "Queue first : %d\n", queueFirst(queue));
+	fprintf(stdout, "Queue last : %d\n", queueLast(queue));
 	int pop = nbElements - ((int) nbElements/2);
 	fprintf(stdout, "Queue pop : %d (nbElements to pop) \n", pop);
 	for (int i = 0; i < pop; i++) {
-		queuePop();
+		queuePop(queue);
 	}
-	queueToString();
+	queueToString(queue);
 	fprintf(stdout, "Queue clear\n");
-	queueClear();
-	fprintf(stdout, "Queue length : %d\n", queueLength());
+	queueClear(queue);
+	fprintf(stdout, "Queue length : %d\n", queueLength(queue));
 }
 	
-int queueIsEmpty() {
-	if (first == NULL && last == NULL) {
+	
+void initQueue(Queue queue) {
+	queue = (Queue) malloc(sizeof(_Queue));
+	if (queue == NULL) {
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
+	queue->first = NULL;
+	queue->last = NULL;
+	queue->nbElements = 0;
+}
+	
+int queueIsEmpty(Queue queue) {
+	if (queue->first == NULL && queue->last == NULL) {
 		return 1;
 	}
 	return 0;
 }
 	
-int queueLength() {
-	return nbElements;
+int queueLength(Queue queue) {
+	return queue->nbElements;
 }
 	
-int queueFirst() {
-	if (queueIsEmpty()) {
+int queueFirst(Queue queue) {
+	if (queueIsEmpty(queue)) {
 		exit(EXIT_FAILURE);
 	}
-	return first->value;
+	return queue->first->value;
 }
 	
-int queueLast() {
-	if (queueIsEmpty()) {
+int queueLast(Queue queue) {
+	if (queueIsEmpty(queue)) {
 		exit(EXIT_FAILURE);
 	}
-	return last->value;
+	return queue->last->value;
 }
 	
-void queuePush(int value) {
+void queuePush(Queue queue, int value) {
 	QueueElement *element = (QueueElement *) malloc(sizeof(QueueElement));
 	if (element == NULL) {
 		fprintf(stderr, "Error : malloc to queuePush\n");
@@ -71,49 +73,56 @@ void queuePush(int value) {
 	}
 	element->value = value;
 	element->next = NULL;
-	if (queueIsEmpty()) {
-		first = element;
-		last = element;
+	if (queueIsEmpty(queue)) {
+		queue->first = element;
+		queue->last = element;
 	} else {
-		last->next = element;
-		last = element;
+		queue->last->next = element;
+		queue->last = element;
 	}
-	nbElements++;
+	queue->nbElements++;
 }
 	
-void queuePop() {
-	if (queueIsEmpty()) {
+void queuePop(Queue queue) {
+	if (queueIsEmpty(queue)) {
 		fprintf(stdout, "queuePop : Queue is empty\n");
 		return;
 	}
-	QueueElement *tmp = first;
-	if (first == last) {
-		first = NULL;
-		last = NULL;
+	QueueElement *tmp = queue->first;
+	if (queue->first == queue->last) {
+		queue->first = NULL;
+		queue->last = NULL;
 	} else {
-		first = first->next;
+		queue->first = queue->first->next;
 	}
 	free(tmp);
-	nbElements--;
+	queue->nbElements--;
 }
 	
-void queueClear() {
-	if (queueIsEmpty()) {
+void queueClear(Queue queue) {
+	if (queueIsEmpty(queue)) {
 		fprintf(stdout, "queueClear : Queue is empty\n");
 		return;
 	}
-	while (!queueIsEmpty()) {
-		queuePop();
+	while (!queueIsEmpty(queue)) {
+		queuePop(queue);
 	}
 }
 	
-void queueToString() {
-	if (queueIsEmpty()) {
+void queueDestroy(Queue queue) {
+	queueClear(queue);
+	if (queue != NULL) {
+		free(queue);
+	}
+}
+	
+void queueToString(Queue queue) {
+	if (queueIsEmpty(queue)) {
 		fprintf(stdout, "queueToString : Queue is empty\n");
 		return;
 	}
 	fprintf(stdout, "Queue : ");
-	QueueElement *tmp = first;
+	QueueElement *tmp = queue->first;
 	while (tmp != NULL) {
 		fprintf(stdout, "|%d|->", tmp->value);
 		tmp = tmp->next;
