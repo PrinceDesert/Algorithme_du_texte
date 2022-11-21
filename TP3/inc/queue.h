@@ -16,7 +16,7 @@ typedef struct _Queue {
 	
 typedef struct _Queue *Queue;
 	
-void initQueue(Queue queue);
+Queue initQueue();
 int queueIsEmpty(Queue queue);
 int queueLength(Queue queue);
 int queueFirst(Queue queue);

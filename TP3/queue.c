@@ -6,7 +6,7 @@
 int main(void) {
 	
 	Queue queue;
-	initQueue(queue);
+	queue = initQueue();
 	
 	fprintf(stdout, "Queue length : %d\n", queueLength(queue));
 	int nbElements = 10;
@@ -14,6 +14,7 @@ int main(void) {
 	for (int i = 0; i < nbElements; i++) {
 		queuePush(queue, i+1);
 	}
+	
 	queueToString(queue);
 	fprintf(stdout, "Queue first : %d\n", queueFirst(queue));
 	fprintf(stdout, "Queue last : %d\n", queueLast(queue));
@@ -29,8 +30,8 @@ int main(void) {
 }
 	
 	
-void initQueue(Queue queue) {
-	queue = (Queue) malloc(sizeof(_Queue));
+Queue initQueue() {
+	Queue queue = (Queue) malloc(sizeof(_Queue));
 	if (queue == NULL) {
 		perror("malloc");
 		exit(EXIT_FAILURE);
@@ -38,6 +39,7 @@ void initQueue(Queue queue) {
 	queue->first = NULL;
 	queue->last = NULL;
 	queue->nbElements = 0;
+	return queue;
 }
 	
 int queueIsEmpty(Queue queue) {
