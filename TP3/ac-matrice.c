@@ -61,6 +61,8 @@ int ac_matrice(const char *filename_words, __attribute__((unused)) const char *f
 		printf("line : %s\n", line);
 		memset(line, '\0', sizeof(line));
 	}
+	
+	int maxNode = nombreLetters + 1; 
 	// Algo AC
 	/*
 		printf("=======================\n");
@@ -187,6 +189,27 @@ int complete(int e) {
 			// faire la fonction de sup
 		}
 	}
+	return 0;
+}
+
+int sup(Trie t, int q) {
+	int current = q;
+	// Tant que pas revenu à la racine
+	while (current != 0) {
+		unsigned char parentLetter;
+		int parentNode;
+		// Récupère la lettre
+		for (int i = 0; i < t->maxNode; i++) {	 
+			for (int j = 0; j < LENGTH_ASCII_CHARS; j++) {
+				if (t->transition[i][j] == current) {
+					parentLetter = (unsigned char) j;
+					parentNode = i;
+					break;
+				}
+			}
+		}
+		// Cherche le plus long suffixe 
+	} 
 	return 0;
 }
 
