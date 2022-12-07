@@ -28,9 +28,9 @@ int main(void) {
 	// printf("text generator : %s\n", text_buffer);
 	
 	const char *word_filename = "./word.txt";
-	size_t nb_word = 10;
+	size_t nb_word = 20;
 	size_t word_length_file = 4;
-	size_t word_alphabet_length_file = 4;
+	size_t word_alphabet_length_file = 70;
 	const char *word_separator = " ";
 	char **word_buffer = word_generator(word_filename, nb_word, word_length_file, word_alphabet_length_file, word_separator);
 	printf("word generator : \n");
@@ -46,12 +46,14 @@ int main(void) {
 	const char *word = NULL;
 	int text_length = (int) strlen(text);
 	int word_length = 0;
+
+	printf("INFO : Pour les algorithmes avec sentinelles, si il retourne 1, c'est qu'il s'agit juste de la copie du mot ajouté à la fin du texte afin d'être sûr d'obtenir une occurence\n");
 	
+	printf("== text : %s (length : %d)\n", text, text_length);
 	for (size_t i = 0; i < nb_word; i++) {
 		
 		word = word_buffer[i]; // "gac"
 		word_length = (int) strlen(word);
-		printf("== text : %s (length : %d)\n", text, text_length);
 		printf("== word : %s (length : %d)\n", word, word_length);
 		
 		print_result_and_measured_time(
@@ -66,7 +68,7 @@ int main(void) {
 		
 		print_result_and_measured_time(
 				naive_algorithm_inner_loop_quick_loop_sentinel,
-				"naive_algorithm_inner_loop_quick_loop_sentinel (C'est normal que 1 car le test d'arrêt s'arrrête à la première occurence)",
+				"naive_algorithm_inner_loop_quick_loop_sentinel",
 				word, word_length, text, text_length);
 		
 		print_result_and_measured_time(
@@ -81,34 +83,41 @@ int main(void) {
 		
 		print_result_and_measured_time(
 				naive_algorithm_strncmp_quick_loop_sentinel,
-				"naive_algorithm_strncmp_quick_loop_sentinel (C'est normal que 1 car le test d'arrêt s'arrrête à la première occurence)",
+				"naive_algorithm_strncmp_quick_loop_sentinel",
 				word, word_length, text, text_length);
 		
 		print_result_and_measured_time(
 				naive_algorithm_strncmp_quick_loop_sentinel,
-				"naive_algorithm_strncmp_quick_loop_sentinel (C'est normal que 1 car le test d'arrêt s'arrrête à la première occurence)",
+				"naive_algorithm_strncmp_quick_loop_sentinel",
 				word, word_length, text, text_length);
 		
 		print_result_and_measured_time(
 				Morris_Pratt_algorithm,
 				"Morris_Pratt_algorithm",
 				word, word_length, text, text_length);
+
+		print_result_and_measured_time(
+				Knuth_Morris_Pratt_algorithm,
+				"Knuth_Morris_Pratt_algorithm",
+				word, word_length, text, text_length);
+		
+		/*
+		 * Les algorithmes ci-dessous sont non fonctionnelles à cause d'une erreur de segmentation mémoire.
+		*/
 		/*
 		print_result_and_measured_time2(
 				Boyer_Moore_algorithm,
 				"Boyer_Moore_algorithm",
 				word, word_length, text, text_length, (int) word_alphabet_length_file);
-		*/
-		/*print_result_and_measured_time2(
+		print_result_and_measured_time2(
 				Horspool_algorithm,
 				"Horspool_algorithm",
-				word, word_length, text, text_length, (int) word_alphabet_length_file + 1);*/
-		
+				word, word_length, text, text_length, (int) word_alphabet_length_file);
 		print_result_and_measured_time2(
 				Quick_Search_algorithm,
 				"Quick_Search_algorithm",
-				word, word_length, text, text_length, (int) word_alphabet_length_file + 1);
-		//printf("\n\n");
+				word, word_length, text, text_length, (int) word_alphabet_length_file);
+		*/
 	}
 	
 	/*---------------------------*/
@@ -119,8 +128,7 @@ int main(void) {
 		free(word_buffer[i]);
 	}
 	free(word_buffer);
-	
-	
+
 	return EXIT_SUCCESS;
 }
 	
@@ -375,7 +383,7 @@ int Knuth_Morris_Pratt_algorithm(const char *word, int m, const char *text, int 
 	return nbOcc;
 }
 	
-void preProcesssing_Last_Occurence_Boyer_Moore_algorithm(const char *word, int m, int alphabetSize, int lastOcc[]) {
+void preProcesssing_Last_Occurence_Boyer_Moore_algorithm(const char *word, int m, int alphabetSize, int *lastOcc) {
 	int i;
 	for (i = 0; i < alphabetSize; i++)
 		lastOcc[i] = m;
@@ -383,7 +391,7 @@ void preProcesssing_Last_Occurence_Boyer_Moore_algorithm(const char *word, int m
 		lastOcc[(int) word[i]] = m - 1 - i;
 }
 	
-void preProcesssing_Suffixes_Boyer_Moore_algorithm(const char *word, int m, int suff[]) {
+void preProcesssing_Suffixes_Boyer_Moore_algorithm(const char *word, int m, int *suff) {
 	int f, g, i;
 	f = 0;
 	g = m - 1;
@@ -394,7 +402,7 @@ void preProcesssing_Suffixes_Boyer_Moore_algorithm(const char *word, int m, int 
 		} else {
 			g = min(i, g);
 			f = i;
-			while (g >= 0 && word[g] == word[g + m - 1 - f]) {
+			while (g >= 0 && word[g] == word[g + m + 1 - f]) {
 				g--;
 			}
 			suff[i] = f - g;
@@ -402,8 +410,9 @@ void preProcesssing_Suffixes_Boyer_Moore_algorithm(const char *word, int m, int 
 	}
 }
 	
-void preProcesssing_Good_Suffixes_Boyer_Moore_algorithm(const char *word, int m, int goodSuffixes[]) {
-	int i, j, suff[m];
+void preProcesssing_Good_Suffixes_Boyer_Moore_algorithm(const char *word, int m, int *goodSuffixes) {
+	int i, j;
+	int suff[m];
 	preProcesssing_Suffixes_Boyer_Moore_algorithm(word, m, suff);
 	i = 0;
 	for (j = m - 2; j >= -1; j--) {
@@ -424,7 +433,6 @@ int Boyer_Moore_algorithm(const char *word, int m, const char *text, int n, int 
 	int goodSuffixes[m];
 	int lastOcc[alphabetSize];
 	int nbOcc = 0;
-	
 	preProcesssing_Good_Suffixes_Boyer_Moore_algorithm(word, m, goodSuffixes);
 	preProcesssing_Last_Occurence_Boyer_Moore_algorithm(word, m, alphabetSize, lastOcc);
 	
