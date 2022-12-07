@@ -9,12 +9,12 @@
  * Algorithmes de recherche exacte d’un mot dans un texte
 */
 
-// measure time : https://www.geeksforgeeks.org/how-to-measure-time-taken-by-a-program-in-c/
 // avec sentinelle : concaténation du mot à la fin
 // trop à droite : si le mot a comparé dépasse la fin du texte
 // test si trop à droite : que si occurence
 // boucle rapide : décale la fenetre à la premier occurence de la lettre en gros c'est l'index qui se décale à une potentiel occurence
-	
+// measure time : https://www.geeksforgeeks.org/how-to-measure-time-taken-by-a-program-in-c/
+
 int main(void) {
 	
 	/*---------------------------------------------------------------------*/
