@@ -14,6 +14,12 @@ typedef struct _trie *Trie;
 Trie createTrie(int maxNode);
 void insertInTrie(Trie trie, unsigned char *w);
 int isInTrie(Trie trie, unsigned char *w);
+
+void printTransition(Trie trie);
+void freeTrie(Trie t);
+Trie prefix(unsigned char *w); // les préfixes du mot w
+Trie suffix(unsigned char *w); // les suffixes du mot w
+// Trie factor(unsigned char *w); // les facteurs du mot w
 	
 #include <limits.h>
 #define LENGTH_ASCII_CHARS UCHAR_MAX + 1

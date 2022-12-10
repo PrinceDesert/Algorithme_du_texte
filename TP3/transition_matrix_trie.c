@@ -4,13 +4,6 @@
 #include <ctype.h>
 #include <transition_matrix_trie.h>
 	
-void printTransition(Trie trie);
-void freeTrie(Trie t);
-Trie prefix(unsigned char *w); // les préfixes du mot w
-Trie suffix(unsigned char *w); // les suffixes du mot w
-// Trie factor(unsigned char *w); // les facteurs du mot w
-	
-	
 Trie createTrie(int maxNode) {
 	Trie t = (Trie) malloc(sizeof(struct _trie));
 	if (t == NULL) {
@@ -165,27 +158,5 @@ void printTransition(Trie trie) {
 		printf("%c|", trie->finite[i]);
 	}
 	printf("\n");
-}
-	
-int main(void) {
-	int maxNode = 20;
-	Trie trie = createTrie(maxNode);
-	if (trie == NULL) {
-		return EXIT_FAILURE;
-	}
-	const char *words[] = {"gtagct", "tag", "gagct", "ctagt", NULL};
-	const char *test_words[] = {"gtagct", "tag", "gagct", "ctagt", "av", "agv", NULL};
-	for (size_t i = 0; words[i] != NULL; i++)
-		insertInTrie(trie, (unsigned char *) words[i]);
-	printTransition(trie);
-	for (size_t i = 0; test_words[i] != NULL; i++) {
-		if (isInTrie(trie, (unsigned char *) test_words[i])) {
-			printf("Word %s is in trie\n", test_words[i]);
-		} else {
-			printf("Word %s isn't in trie\n", test_words[i]);
-		}
-	}
-	freeTrie(trie);
-	return EXIT_SUCCESS;
 }
 	

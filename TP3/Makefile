@@ -7,10 +7,11 @@ all : $(EXE)
 
 # enere_texte :
 
-transition : transition_matrix_trie.o
+ac-matrice : ac-matrice.o transition_matrix_trie.o
 	$(CC) -o $@ $^
 
-ac-matrice : ac-matrice.o transition_matrix_trie.o
+
+transition : transition_matrix_trie.o
 	$(CC) -o $@ $^
 
 %.o : %.c

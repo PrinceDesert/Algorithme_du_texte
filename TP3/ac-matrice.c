@@ -7,7 +7,7 @@
 #include <transition_list.h>
 #include <transition_matrix_trie.h>
 	
-	
+
 // La liste des transitions
 // struct transition {int startNode, int endNode, char letter}
 // *transition = list des transitions
@@ -19,95 +19,51 @@
 
 // la fonction sup regarde le plus long suffixe pour trouver l'état où atterir
 	
-int ac_matrice(const char *filename_words, const char *filename_text);
+char** lire_mots(const char *fichier_mots, int *nbMots);
+char* lire_texte(const char *fichier_texte);
+
+void pre_ac(Trie trie, const char **mots, int k);
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
-int main(void) {
-	
-	ac_matrice("./mots.txt", "./texte.txt");
-	
+int main(int argc, char *argv[]) {
+	if (argc != 3) {
+		printf("Usage : %s <fichier mot> <fichier texte>\n", argv[0]);
+		return EXIT_FAILURE;
+	}
+	const char *fichier_mots = "./mots.txt"; // argv[1];
+	const char *fichier_texte = "./texte.txt"; // argv[2];
+	int nbMots = 0;
+	__attribute_maybe_unused__ char **mots = lire_mots(fichier_mots, &nbMots);
+	__attribute_maybe_unused__ char *texte = lire_texte(fichier_texte);
+	// ac_matrice(fichier_mots, fichier_texte);
 	return EXIT_SUCCESS;
 }
 
-int ac_matrice(const char *filename_words, __attribute__((unused)) const char *filename_text) {
+int ac_matrice(const char **mots, int *nbMots, __attribute_maybe_unused__ const char **texte) {
 	
-	
-	// pour chaque mot
-	FILE *fp;
-	int size = 256;
-	char line[size];
-	
-	fp = fopen(filename_words, "rb");
-	if (!fp) {
-		fprintf(stderr, "Cannot open %s to read\n", filename_words);
-		exit(EXIT_FAILURE);
-	}
-	
-	/*Trie trie = createTrie(25); 
+	int nbOcc = 0;
+	Trie trie = createTrie(100);
 	if (trie == NULL) {
 		exit(EXIT_FAILURE);
-	}*/
-	
-	while (!feof(fp)) {
-		if (fgets(line, ARRAY_SIZE(line), fp) == NULL) {
-			if (ferror(fp)) {
-				fprintf(stderr, "fgets failed : %d\n", errno);
-				exit(EXIT_FAILURE);
-			}
-		}
-		line[strcspn(line, "\n")] = '\0';
-		// insertInTrie(trie, (unsigned char *)  line);
-		printf("line : %s\n", line);
-		memset(line, '\0', sizeof(line));
 	}
-	
-	int maxNode = nombreLetters + 1; 
-	// Algo AC
-	/*
-		printf("=======================\n");
-		printf("== TRANSITION MATRIX ==\n");
-		printf("=======================\n");
-		for (size_t i = 0; i < (size_t) trie->maxNode; i++) {
-			printf("%u:\n", (int) i);
-			for (size_t j = 0; j < UCHAR_MAX + 1; j++) {
-				if (trie->transition[i][j] != 0) {
-					if (isprint(j)) {
-						printf("printable char(ascii:%lu) %c : %d\n", j, (char) j, trie->transition[i][j]);
-					} else {
-						printf("non printable char(ascii:%lu) : %d\n", j, trie->transition[i][j]);
-					}
-				}
-			}
-			printf("\n");
-		}
-		printf("finite :\n");
-		for (size_t i = 0; i < (size_t) trie->maxNode + 1; i++) {
-			printf("%c|", trie->finite[i]);
-		}
-		printf("\n");
-	*/
-	if (fclose(fp) != 0) {
-		fprintf(stderr, "Cannot close %s\n", filename_words);
-		exit(EXIT_FAILURE);
-	}
-	
-	return 0;
+
+	pre_ac(trie, mots, *nbMots);
+
+	return nbOcc;
 }
 
-void pre_ac(const char *x, int k) {
-	int maxNode = k + 1;
-	Trie trie = createTrie(maxNode);
-	if (trie == NULL) {
-		exit(EXIT_FAILURE);
-	}
+void pre_ac(Trie trie, const char **mots, int k) {
 	// La fonction entrer(entrer un état) est représenter par insertInTrie
-	insertInTrie(trie, (unsigned char *) x);
-	complete(0);
+	for (int i = 0; i < k; i++) {
+		insertInTrie(trie, (unsigned char *) mots[i]);
+	}
+	printTransition(trie);
+	// complete(trie, 0);
 }
-	
+/*
 // e = num état
-int complete(int e) {
+int complete(Trie trie, int e) {
 	//aho_queue q = new_aho_queue();
 	// crée une liste des transitions de e
 	
@@ -212,4 +168,92 @@ int sup(Trie t, int q) {
 	} 
 	return 0;
 }
+*/
 
+char ** lire_mots(const char *fichier_mots, int *nbMots) {
+	FILE *fp;	
+	fp = fopen(fichier_mots, "rb");
+	if (!fp) {
+		fprintf(stderr, "Impossible d'ouvrir %s pour lire\n", fichier_mots);
+		exit(EXIT_FAILURE);
+	}
+
+	char **buffer;
+	size_t len_buf;
+	size_t len_strbuf;
+	len_buf = 2048;
+	int bytes;
+	int i = 0;
+	buffer = (char **) malloc(len_buf);
+	if (buffer == NULL) { perror("malloc"); exit(EXIT_FAILURE); }
+
+	int size_line = 256;
+	char line[size_line];
+
+	while (!feof(fp)) {
+		if (fgets(line, ARRAY_SIZE(line), fp) == NULL) {
+			if (ferror(fp)) {
+				fprintf(stderr, "fgets failed : %d\n", errno);
+				exit(EXIT_FAILURE);
+			}
+		}
+		line[strcspn(line, "\n")] = '\0';
+		len_strbuf = (strlen(line) + 1) * sizeof(char);
+		buffer[i] = malloc(len_strbuf);
+		if (buffer[i] == NULL) { perror("malloc"); exit(EXIT_FAILURE); }
+		bytes = snprintf(buffer[i], len_strbuf, "%s", line);
+		if (bytes < 0 ||  bytes >= (int) len_strbuf) { perror("snprintf"); exit(EXIT_FAILURE); }
+		memset(line, '\0', sizeof(line));
+		i++;
+		(*nbMots)++;
+	}
+
+	if (fclose(fp) != 0) {
+		fprintf(stderr, "Impossible de fermer %s\n", fichier_mots);
+		exit(EXIT_FAILURE);
+	}
+	/*
+	printf("Nombre de mot(s) : %d\n", *nbMots);
+	for (int j = 0; j < i; j++) {
+		printf("mot : %s\n", buffer[j]);
+	}
+	*/
+
+	return buffer;
+}
+
+char * lire_texte(const char *fichier_texte) {
+	FILE *fp;	
+	fp = fopen(fichier_texte, "rb");
+	if (!fp) {
+		fprintf(stderr, "Impossible d'ouvrir %s pour lire\n", fichier_texte);
+		exit(EXIT_FAILURE);
+	}
+
+	int size_line = 256;
+	char line[size_line];
+	if (fgets(line, ARRAY_SIZE(line), fp) == NULL) {
+		if (ferror(fp)) {
+			fprintf(stderr, "fgets failed : %d\n", errno);
+			exit(EXIT_FAILURE);
+		}
+	}
+	line[strcspn(line, "\n")] = '\0';
+
+	char *buffer;
+	size_t len_buf = 2048;
+	int bytes;
+	buffer = (char *) malloc(len_buf);
+	if (buffer == NULL) { perror("malloc"); exit(EXIT_FAILURE); }
+	bytes = snprintf(buffer, len_buf, "%s", line);
+	if (bytes < 0 ||  bytes >= (int) len_buf) { perror("snprintf"); exit(EXIT_FAILURE); }
+
+	if (fclose(fp) != 0) {
+		fprintf(stderr, "Impossible de fermer %s\n", fichier_texte);
+		exit(EXIT_FAILURE);
+	}
+
+	// printf("texte : %s\n", buffer);
+
+	return buffer;
+}
