@@ -22,6 +22,7 @@
 char** lire_mots(const char *fichier_mots, int *nbMots);
 char* lire_texte(const char *fichier_texte);
 
+int ac_matrice(const char **mots, int *nbMots, const char *texte);
 void pre_ac(Trie trie, const char **mots, int k);
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
@@ -34,13 +35,13 @@ int main(int argc, char *argv[]) {
 	const char *fichier_mots = "./mots.txt"; // argv[1];
 	const char *fichier_texte = "./texte.txt"; // argv[2];
 	int nbMots = 0;
-	__attribute_maybe_unused__ char **mots = lire_mots(fichier_mots, &nbMots);
-	__attribute_maybe_unused__ char *texte = lire_texte(fichier_texte);
-	// ac_matrice(fichier_mots, fichier_texte);
+	__attribute_maybe_unused__ const char **mots = (const char **) lire_mots(fichier_mots, &nbMots);
+	__attribute_maybe_unused__ const char *texte = (const char *) lire_texte(fichier_texte);
+	ac_matrice(mots, &nbMots, texte);
 	return EXIT_SUCCESS;
 }
 
-int ac_matrice(const char **mots, int *nbMots, __attribute_maybe_unused__ const char **texte) {
+int ac_matrice(const char **mots, int *nbMots, __attribute_maybe_unused__ const char *texte) {
 	
 	int nbOcc = 0;
 	Trie trie = createTrie(100);
@@ -58,12 +59,16 @@ void pre_ac(Trie trie, const char **mots, int k) {
 	for (int i = 0; i < k; i++) {
 		insertInTrie(trie, (unsigned char *) mots[i]);
 	}
-	printTransition(trie);
-	// complete(trie, 0);
+	// printTransition(trie);
+	complete(trie);
 }
+
+// cbbabc
+
+
 /*
 // e = num état
-int complete(Trie trie, int e) {
+int complete(Trie trie) {
 	//aho_queue q = new_aho_queue();
 	// crée une liste des transitions de e
 	
