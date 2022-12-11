@@ -2,7 +2,31 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 #include <transition_matrix_trie.h>
+
+
+int main(void) {
+	int maxNode = 20;
+	Trie trie = createTrie(maxNode);
+	if (trie == NULL) {
+		return EXIT_FAILURE;
+	}
+	const char *words[] = {"gtagct", "tag", "gagct", "ctagt", NULL};
+	const char *test_words[] = {"gtagct", "tag", "gagct", "ctagt", "av", "agv", NULL};
+	for (size_t i = 0; words[i] != NULL; i++)
+		insertInTrie(trie, (unsigned char *) words[i]);
+	printTransition(trie);
+	for (size_t i = 0; test_words[i] != NULL; i++) {
+		if (isInTrie(trie, (unsigned char *) test_words[i])) {
+			printf("Word %s is in trie\n", test_words[i]);
+		} else {
+			printf("Word %s isn't in trie\n", test_words[i]);
+		}
+	}
+	freeTrie(trie);
+	return EXIT_SUCCESS;
+}
 	
 Trie createTrie(int maxNode) {
 	Trie t = (Trie) malloc(sizeof(struct _trie));
@@ -159,4 +183,3 @@ void printTransition(Trie trie) {
 	}
 	printf("\n");
 }
-	

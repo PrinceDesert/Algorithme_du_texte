@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <transition_list.h>
 #include <transition_matrix_trie.h>
+#include <queue.h>
 	
 
 // La liste des transitions
@@ -35,39 +36,45 @@ int main(int argc, char *argv[]) {
 	const char *fichier_mots = "./mots.txt"; // argv[1];
 	const char *fichier_texte = "./texte.txt"; // argv[2];
 	int nbMots = 0;
-	__attribute_maybe_unused__ const char **mots = (const char **) lire_mots(fichier_mots, &nbMots);
-	__attribute_maybe_unused__ const char *texte = (const char *) lire_texte(fichier_texte);
+	const char **mots = (const char **) lire_mots(fichier_mots, &nbMots);
+	const char *texte = (const char *) lire_texte(fichier_texte);
 	ac_matrice(mots, &nbMots, texte);
 	return EXIT_SUCCESS;
 }
 
-int ac_matrice(const char **mots, int *nbMots, __attribute_maybe_unused__ const char *texte) {
+int ac_matrice(const char **mots, int *nbMots, const char *texte) {
 	
 	int nbOcc = 0;
 	Trie trie = createTrie(100);
 	if (trie == NULL) {
 		exit(EXIT_FAILURE);
 	}
-
-	pre_ac(trie, mots, *nbMots);
+	printTransition(trie);
+	free(trie);
+	//pre_ac(trie, mots, *nbMots);
 
 	return nbOcc;
 }
 
 void pre_ac(Trie trie, const char **mots, int k) {
 	// La fonction entrer(entrer un état) est représenter par insertInTrie
+	// Entrer(X[i], q0)
 	for (int i = 0; i < k; i++) {
 		insertInTrie(trie, (unsigned char *) mots[i]);
 	}
+	for (int j = 0; j < LENGTH_ASCII_CHARS; j++) {
+		if (!trie->transition[0][j]) {
+			trie->transition[0][j] = 0;
+		}
+	}
 	// printTransition(trie);
-	complete(trie);
+	// complete(trie);
 }
 
 // cbbabc
 
 
 /*
-// e = num état
 int complete(Trie trie) {
 	//aho_queue q = new_aho_queue();
 	// crée une liste des transitions de e
@@ -152,7 +159,9 @@ int complete(Trie trie) {
 	}
 	return 0;
 }
+*/
 
+/*
 int sup(Trie t, int q) {
 	int current = q;
 	// Tant que pas revenu à la racine
