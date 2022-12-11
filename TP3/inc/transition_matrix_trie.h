@@ -21,6 +21,7 @@ Trie prefix(unsigned char *w); // les préfixes du mot w
 Trie suffix(unsigned char *w); // les suffixes du mot w
 // Trie factor(unsigned char *w); // les facteurs du mot w
 
+#define FIRST_STATE 0
 #define EMPTY_TRANSITION -1
 
 #include <limits.h>

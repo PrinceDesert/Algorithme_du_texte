@@ -50,6 +50,19 @@ Trie createTrie(int maxNode) {
 			return NULL;
 		}
 	}
+
+	printf("t max : %d - %lu\n", t->maxNode, (size_t) t->maxNode);
+	// exit(EXIT_FAILURE);
+	for (int i = 0; i < t->maxNode; i++) {
+		for (int j = 0; j < LENGTH_ASCII_CHARS; j++) {
+			t->transition[i][j] = -1;
+			if (t->transition[i][j] != -1)
+				printf("transition[%d][%d]=%d\n", i, j, t->transition[i][j]);
+		}
+	}
+
+	printf("t max : %d - %lu\n", t->maxNode, (size_t) t->maxNode);
+
 	// +1 : '\0'
 	size_t lenFinite = (size_t) t->maxNode + 1;
 	t->finite = (char *) calloc(lenFinite, sizeof(char));
@@ -67,17 +80,17 @@ void insertInTrie(Trie trie, unsigned char *w) {
 		printf("Insertion : le mot %s est déja dans le trie\n", w);
 		return;
 	}
-	size_t idxW = 0;
+	int idxW = 0;
 	printf("Insertion in trie : %s\n", w);
-	size_t i = 0;
-	while (i < (size_t) trie->maxNode && w[idxW] != '\0') {
-		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
+	int i = 0;
+	while (i < trie->maxNode && w[idxW] != '\0') {
+		for (int j = 0; j < LENGTH_ASCII_CHARS; j++) {
 			if (j == w[idxW]) {
-				if (!trie->transition[i][j]) {
+				if (trie->transition[i][j] != EMPTY_TRANSITION) {
 					trie->transition[i][j] = trie->nextNode++;
 				}
-				i = (size_t) trie->transition[i][j]; 
-				printf("%c==%c : transition[%lu][%lu]=%d\n", (char) j, w[idxW], i, j, trie->transition[i][j]);
+				i = trie->transition[i][j] != EMPTY_TRANSITION ? trie->transition[i][j] : FIRST_STATE;
+				printf("%c==%c : transition[%d][%d]=%d\n", (char) j, w[idxW], i, j, trie->transition[i][j]);
 				break;
 			}
 		}
@@ -85,7 +98,7 @@ void insertInTrie(Trie trie, unsigned char *w) {
 	}
 	trie->finite[trie->nextNode-1] = '1';
 	printf("finite :\n");
-	for (size_t i = 0; i < (size_t) trie->maxNode + 1; i++) {
+	for (int i = 0; i < trie->maxNode + 1; i++) {
 		printf("%c|", trie->finite[i]);
 	}
 	printf("\n");
@@ -93,23 +106,23 @@ void insertInTrie(Trie trie, unsigned char *w) {
 	
 	
 int isInTrie(Trie trie, unsigned char *w) {
-	size_t i = 0;
-	size_t idxW = 0;
-	long int lastIdxW = -1;
-	while (i < (size_t) trie->maxNode && w[idxW] != '\0') {
-		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
+	int i = 0;
+	int idxW = 0;
+	int lastIdxW = -1;
+	while (i < trie->maxNode && w[idxW] != '\0') {
+		for (int j = 0; j < LENGTH_ASCII_CHARS; j++) {
 			if (w[idxW] == j) {
-				lastIdxW = (long int) idxW;
-				i = (size_t) trie->transition[i][j];
+				lastIdxW = idxW;
+				i = trie->transition[i][j] != EMPTY_TRANSITION ? trie->transition[i][j] : FIRST_STATE;
 				idxW++;
 			}
 		}
 		// Node not found
-		if ((size_t) lastIdxW == idxW) {
+		if (lastIdxW == idxW) {
 			return 0;
 		}
 	}
-	printf("%s i=%lu\n", w, i);
+	printf("%s i=%d\n", w, i);
 	return trie->finite[i] == '1';
 }
 	
@@ -167,7 +180,7 @@ void printTransition(Trie trie) {
 		printf("%u:\n", (int) i);
 		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
 			/* DEBUG : remove this condition statement to see all */
-			if (trie->transition[i][j] != 0) {
+			if (trie->transition[i][j] != EMPTY_TRANSITION) {
 				if (isprint(j)) {
 					printf("printable char(ascii:%lu) %c : %d\n", j, (char) j, trie->transition[i][j]);
 				} else {
