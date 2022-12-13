@@ -63,8 +63,8 @@ void pre_ac(Trie trie, const char **mots, int k) {
 		insertInTrie(trie, (unsigned char *) mots[i]);
 	}
 	for (int j = 0; j < LENGTH_ASCII_CHARS; j++) {
-		if (!trie->transition[0][j]) {
-			trie->transition[0][j] = 0;
+		if (trie->transition[0][j] != EMPTY_TRANSITION) {
+			trie->transition[0][j] = EMPTY_TRANSITION;
 		}
 	}
 	// printTransition(trie);
