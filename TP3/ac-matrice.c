@@ -62,7 +62,7 @@ void pre_ac(Trie trie, const char **mots, int k) {
 	for (int i = 0; i < k; i++) {
 		insertInTrie(trie, (unsigned char *) mots[i]);
 	}
-	for (int j = 0; j < LENGTH_ASCII_CHARS; j++) {
+	for (int j = 0; j < CHAR_LENGTH; j++) {
 		if (trie->transition[0][j] != EMPTY_TRANSITION) {
 			trie->transition[0][j] = EMPTY_TRANSITION;
 		}
@@ -72,8 +72,6 @@ void pre_ac(Trie trie, const char **mots, int k) {
 }
 
 // cbbabc
-
-
 
 int complete(Trie trie) {
 	
@@ -85,7 +83,7 @@ int complete(Trie trie) {
 	unsigned char a;
 	List precedent = NULL;
 	List transition = NULL;
-	for (int j = 0; j < LENGTH_ASCII_CHARS; j++) {
+	for (int j = 0; j < CHAR_LENGTH; j++) {
 		if (trie->transition[0][j] != 0) {
 			p = trie->transition[0][j];
 			transition = (List) malloc(sizeof(struct _list));
@@ -122,7 +120,7 @@ int complete(Trie trie) {
 		// l = liste des transitions (r,a,p)
 		// récupère les transitions ayant pour noeud de départ r
 		precedent = NULL;
-		for (int j = 0; j < LENGTH_ASCII_CHARS; j++) {
+		for (int j = 0; j < CHAR_LENGTH; j++) {
 			if (trie->transition[r][j] != 0) {
 				p = trie->transition[r][j];
 				a = (unsigned char) j;
@@ -167,7 +165,7 @@ int sup(Trie t, int q) {
 		int parentNode;
 		// Récupère la lettre
 		for (int i = 0; i < t->maxNode; i++) {	 
-			for (int j = 0; j < LENGTH_ASCII_CHARS; j++) {
+			for (int j = 0; j < CHAR_LENGTH; j++) {
 				if (t->transition[i][j] == current) {
 					parentLetter = (unsigned char) j;
 					parentNode = i;

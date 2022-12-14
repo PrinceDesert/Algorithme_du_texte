@@ -25,6 +25,6 @@ Trie suffix(unsigned char *w); // les suffixes du mot w
 #define EMPTY_TRANSITION -1
 
 #include <limits.h>
-#define LENGTH_ASCII_CHARS UCHAR_MAX + 1
+#define CHAR_LENGTH UCHAR_MAX + 1
 	
 #endif
