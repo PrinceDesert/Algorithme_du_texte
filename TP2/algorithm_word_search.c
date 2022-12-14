@@ -24,7 +24,7 @@ int main(void) {
 	/*---------------------------------------------------------------------*/
 	
 	const char *text_filename = "./text.txt"; 
-	size_t text_length_file = 100;
+	size_t text_length_file = 100000;
 	size_t text_alphabet_length_file = 70;
 	char *text_buffer = text_generator(text_filename, text_length_file, text_alphabet_length_file);
 	// printf("text generator : %s\n", text_buffer);
