@@ -112,10 +112,9 @@ int Knuth_Morris_Pratt_algorithm(const char *word, int m, const char *text, int 
  * Phase de pré-traitement de l'algorithme Boyer-Moore
  * @param word : le mot
  * @param m : la taille du mot
- * @param alphabetSize : la taille de l'alphabet
  * @param lastOcc : la table des dernières occurences
 */
-void preProcesssing_Last_Occurence_Boyer_Moore_algorithm(const char *word, int m, int alphabetSize, int lastOcc[]);
+void preProcesssing_Last_Occurence_Boyer_Moore_algorithm(const char *word, int m, int lastOcc[]);
 /**
  * Phase de pré-traitement de l'algorithme Boyer-Moore
  * @param word : le mot
@@ -136,9 +135,8 @@ void preProcesssing_Good_Suffixes_Boyer_Moore_algorithm(const char *word, int m,
  * @param m : la taille du mot
  * @param text : le texte
  * @param n : la taille du texte
- * @param alphabetSize : la taille de l'alphabet
 */
-int Boyer_Moore_algorithm(const char *word, int m, const char *text, int n, int alphabetSize);
+int Boyer_Moore_algorithm(const char *word, int m, const char *text, int n);
 
 /**
  * Algorithme de Horspool
@@ -146,27 +144,24 @@ int Boyer_Moore_algorithm(const char *word, int m, const char *text, int n, int 
  * @param m : la taille du mot
  * @param text : le texte
  * @param n : la taille du texte
- * @param alphabetSize : la taille de l'alphabet
 */
-int Horspool_algorithm(const char *word, int m, const char *text, int n, int alphabetSize);
+int Horspool_algorithm(const char *word, int m, const char *text, int n);
 
 /**
  * Phase de pré-traitement de l'algorithme Quick Search
  * @param word : le mot
  * @param m : la taille du mot
- * @param alphabetSize : la taille de l'alphabet
  * @param badChars : la table des mauvais caractères (décalage)
 */
-void preProcesssing_Bad_Chars_Shift_Quick_Search_algorithm(const char *word, int m, int alphabetSize, int badChars[]);
+void preProcesssing_Bad_Chars_Shift_Quick_Search_algorithm(const char *word, int m, int badChars[]);
 /**
  * Algorithme de Quick Search
  * @param word : le mot
  * @param m : la taille du mot
  * @param text : le texte
  * @param n : la taille du texte
- * @param alphabetSize : la taille de l'alphabet
 */
-int Quick_Search_algorithm(const char *word, int m, const char *text, int n, int alphabetSize);
+int Quick_Search_algorithm(const char *word, int m, const char *text, int n);
 
 /*----------------------------------------------------------*/
 /*					FONCTIONS UTILITAIRES					*/
@@ -230,11 +225,5 @@ void print_result_and_measured_time(
 	int (*function)(const char *word, int m, const char *text, int n),
 	const char *function_name,
 	const char *word, int m, const char *text, int n);
-/**
- * Version pour les algorithmes qui ont un paramètre alphabetSize
-*/
-void print_result_and_measured_time2(
-	int (*function)(const char *word, int m, const char *text, int n, int alphabetSize),
-	const char *function_name,
-	const char *word, int m, const char *text, int n, int alphabetSize);
+
 #endif

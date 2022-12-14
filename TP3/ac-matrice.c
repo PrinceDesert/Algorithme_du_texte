@@ -68,16 +68,14 @@ void pre_ac(Trie trie, const char **mots, int k) {
 		}
 	}
 	// printTransition(trie);
-	// complete(trie);
+	complete(trie);
 }
 
 // cbbabc
 
 
-/*
+
 int complete(Trie trie) {
-	//aho_queue q = new_aho_queue();
-	// crée une liste des transitions de e
 	
 	// f = file vide
 	Queue f;
@@ -159,7 +157,6 @@ int complete(Trie trie) {
 	}
 	return 0;
 }
-*/
 
 /*
 int sup(Trie t, int q) {
