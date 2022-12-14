@@ -24,7 +24,7 @@ int main(void) {
 	/*---------------------------------------------------------------------*/
 	
 	const char *text_filename = "./text.txt"; 
-	size_t text_length_file = 100000;
+	size_t text_length_file = 50000;
 	size_t text_alphabet_length_file = 70;
 	char *text_buffer = text_generator(text_filename, text_length_file, text_alphabet_length_file);
 	// printf("text generator : %s\n", text_buffer);
@@ -178,13 +178,9 @@ int naive_algorithm_inner_loop_quick_loop_sentinel(const char *word, int m, cons
 	int nbOcc = 0;
 	int nextOcc = -1;
 	// création d'un copie du texte et ajout du mot à la fin du texte pour être sur d'avoir une occurence = sentinelle
-	size_t newTextLength = (size_t) n + 1 + strlen(word);
-	char *newText = (char *) malloc(newTextLength * sizeof(char));
-	if (newText == NULL) {
-		perror("malloc");
-		exit(EXIT_FAILURE);
-	}
-	if (snprintf(newText, newTextLength, "%s%s", text, word) == 0) {
+	int newTextLength = ((int) strlen(word)) + (n + 1);
+	char newText[newTextLength];
+	if (snprintf(newText, (size_t) newTextLength, "%s%s", text, word) == 0) {
 		perror("snprintf");
 		exit(EXIT_FAILURE);
 	}
@@ -263,13 +259,9 @@ int naive_algorithm_strncmp_quick_loop_sentinel(const char *word, int m, const c
 	int nbOcc = 0;
 	int nextOcc = -1;
 	// création d'un copie du texte et ajout du mot à la fin du texte pour être sur d'avoir une occurence = sentinelle
-	size_t newTextLength = (size_t) n+1 + strlen(word);
-	char *newText = (char *) malloc(newTextLength * sizeof(char));
-	if (newText == NULL) {
-		perror("realloc");
-		exit(EXIT_FAILURE);
-	}
-	if (snprintf(newText, newTextLength, "%s%s", text, word) == 0) {
+	int newTextLength = ((int) strlen(word)) + (n + 1);
+	char newText[newTextLength];
+	if (snprintf(newText, (size_t) newTextLength, "%s%s", text, word) == 0) {
 		perror("snprintf");
 		exit(EXIT_FAILURE);
 	}
