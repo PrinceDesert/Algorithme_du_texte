@@ -24,7 +24,7 @@ int main(void) {
 	/*---------------------------------------------------------------------*/
 	
 	const char *text_filename = "./text.txt"; 
-	size_t text_length_file = 5000;
+	size_t text_length_file = 500000;
 	size_t text_alphabet_length_file = 70;
 	char *text_buffer = text_generator(text_filename, text_length_file, text_alphabet_length_file);
 	// printf("text generator : %s\n", text_buffer);
@@ -82,7 +82,7 @@ int main(void) {
 				naive_algorithm_strncmp_quick_loop,
 				"naive_algorithm_strncmp_quick_loop",
 				word, word_length, text, text_length);
-		
+				
 		print_result_and_measured_time(
 				naive_algorithm_strncmp_quick_loop_sentinel,
 				"naive_algorithm_strncmp_quick_loop_sentinel",
@@ -102,10 +102,12 @@ int main(void) {
 				Boyer_Moore_algorithm,
 				"Boyer_Moore_algorithm",
 				word, word_length, text, text_length);
+				
 		print_result_and_measured_time(
 				Horspool_algorithm,
 				"Horspool_algorithm",
 				word, word_length, text, text_length);
+				
 		print_result_and_measured_time(
 				Quick_Search_algorithm,
 				"Quick_Search_algorithm",
@@ -161,7 +163,7 @@ int naive_algorithm_inner_loop_quick_loop(const char *word, int m, const char *t
 			nbOcc++;
 		}
 		j++;
-		if ((nextOcc = findNextIndex(text, strlen(text), (size_t) j, word[0])) != -1) {
+		if ((nextOcc = findNextIndex(text, (size_t) n, (size_t) j, word[0])) != -1) {
 			j = nextOcc;
 		}
 	}
@@ -178,7 +180,8 @@ int naive_algorithm_inner_loop_quick_loop_sentinel(const char *word, int m, cons
 	int nbOcc = 0;
 	int nextOcc = -1;
 	// création d'un copie du texte et ajout du mot à la fin du texte pour être sur d'avoir une occurence = sentinelle
-	int newTextLength = ((int) strlen(word)) + (n + 1);
+	// +1 = '\0'
+	int newTextLength = (n + m) + 1;
 	char newText[newTextLength];
 	if (snprintf(newText, (size_t) newTextLength, "%s%s", text, word) == 0) {
 		perror("snprintf");
@@ -213,18 +216,10 @@ int naive_algorithm_inner_loop_quick_loop_sentinel(const char *word, int m, cons
 */
 int naive_algorithm_strncmp(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
-	int i, j;
+	int i;
 	int nbOcc = 0;
-	for (j = 0; j <= n - m; ++j) {
-		// Extraction de la fenêtre contenant le mot du texte
-		const char *text_substr = substr(text, (size_t) j, strlen(word) + (size_t) j);
-		// printf("Extrait : %s\n", text_substr);
-		if (text_substr == NULL) {
-			fprintf(stderr, "Error substr(%s,%d,%d) = NULL", word, i, j);
-			exit(EXIT_FAILURE);
-		}
-		if (strncmp(text_substr, word, strlen(word)) == 0) {
-			// printf("Strncmp : (%s, %s, %lu)\n", text_substr, word, strlen(word));
+	for (i = 0; i <= n - m; i++) {
+		if (strncmp(text + (((int) sizeof(*text)) * i), word, strlen(word)) == 0) {
 			nbOcc++;
 		}
 	}
@@ -233,21 +228,16 @@ int naive_algorithm_strncmp(const char *word, int m, const char *text, int n) {
 	
 int naive_algorithm_strncmp_quick_loop(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
-	int i, j = 0;
+	int i = 0;
 	int nbOcc = 0;
 	int nextOcc = -1;
-	while (j <= n - m) {
-		const char *text_substr = substr(text, (size_t) j, strlen(word) + (size_t) j);
-		if (text_substr == NULL) {
-			fprintf(stderr, "Error substr(%s,%d,%d) = NULL", word, i, j);
-			exit(EXIT_FAILURE);
-		}
-		if (strncmp(text_substr, word, strlen(word)) == 0) {
+	while (i <= n - m) {
+		if (strncmp(text + (((int) sizeof(*text)) * i), word, strlen(word)) == 0) {
 			nbOcc++;
 		}
-		j++;
-		if ((nextOcc = findNextIndex(text, strlen(text), (size_t) j, word[0])) != -1) {
-			j = nextOcc;
+		i++;
+		if ((nextOcc = findNextIndex(text, strlen(text), (size_t) i, word[0])) != -1) {
+			i = nextOcc;
 		}
 	}
 	return nbOcc;
@@ -255,33 +245,29 @@ int naive_algorithm_strncmp_quick_loop(const char *word, int m, const char *text
 	
 int naive_algorithm_strncmp_quick_loop_sentinel(const char *word, int m, const char *text, int n) {
 	if (word == NULL || text == NULL || m == 0 || n == 0) return 0;
-	int i, j = 0;
+	int i = 0;
 	int nbOcc = 0;
 	int nextOcc = -1;
 	// création d'un copie du texte et ajout du mot à la fin du texte pour être sur d'avoir une occurence = sentinelle
-	int newTextLength = ((int) strlen(word)) + (n + 1);
+	// +1 = '\0'
+	int newTextLength = (n + m) + 1;
 	char newText[newTextLength];
 	if (snprintf(newText, (size_t) newTextLength, "%s%s", text, word) == 0) {
 		perror("snprintf");
 		exit(EXIT_FAILURE);
 	}
-
 	while (1) {
-		const char *text_substr = substr(text, (size_t) j, strlen(word) + (size_t) j);
-		if (text_substr == NULL) {
-			fprintf(stderr, "Error substr(%s,%d,%d) = NULL", word, i, j);
-			exit(EXIT_FAILURE);
-		}
-		if (strncmp(text_substr, word, strlen(word)) == 0) {
+		if (strncmp(newText + (((int) sizeof(*newText)) * i), word, (size_t) m) == 0) {
 			nbOcc++;
 			// Test trop à droite
-			if (j >= n) {
+			// -1 : '\0'
+			if (i >= (newTextLength - m) - 1) {
 				break;
 			}
 		}
-		j++;
-		if ((nextOcc = findNextIndex(newText, strlen(newText), (size_t) j, word[0])) != -1) {
-			j = nextOcc;
+		i++;
+		if ((nextOcc = findNextIndex(newText, strlen(newText), (size_t) i, word[0])) != -1) {
+			i = nextOcc;
 		}
 	}
 	return nbOcc - 1;
