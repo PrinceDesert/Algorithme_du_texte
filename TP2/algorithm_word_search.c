@@ -203,7 +203,7 @@ int naive_algorithm_inner_loop_quick_loop_sentinel(const char *word, int m, cons
 			}
 		}
 		j++;
-		if ((nextOcc = findNextIndex(newText, strlen(newText), (size_t) j, word[0])) != -1) {
+		if ((nextOcc = findNextIndex(newText, (size_t) newTextLength, (size_t) j, word[0])) != -1) {
 			j = nextOcc;
 		}
 	}
@@ -219,7 +219,7 @@ int naive_algorithm_strncmp(const char *word, int m, const char *text, int n) {
 	int i;
 	int nbOcc = 0;
 	for (i = 0; i <= n - m; i++) {
-		if (strncmp(text + (((int) sizeof(*text)) * i), word, strlen(word)) == 0) {
+		if (strncmp(text + (((int) sizeof(*text)) * i), word, (size_t) m) == 0) {
 			nbOcc++;
 		}
 	}
@@ -232,11 +232,11 @@ int naive_algorithm_strncmp_quick_loop(const char *word, int m, const char *text
 	int nbOcc = 0;
 	int nextOcc = -1;
 	while (i <= n - m) {
-		if (strncmp(text + (((int) sizeof(*text)) * i), word, strlen(word)) == 0) {
+		if (strncmp(text + (((int) sizeof(*text)) * i), word, (size_t) m) == 0) {
 			nbOcc++;
 		}
 		i++;
-		if ((nextOcc = findNextIndex(text, strlen(text), (size_t) i, word[0])) != -1) {
+		if ((nextOcc = findNextIndex(text, (size_t) n, (size_t) i, word[0])) != -1) {
 			i = nextOcc;
 		}
 	}
@@ -266,7 +266,7 @@ int naive_algorithm_strncmp_quick_loop_sentinel(const char *word, int m, const c
 			}
 		}
 		i++;
-		if ((nextOcc = findNextIndex(newText, strlen(newText), (size_t) i, word[0])) != -1) {
+		if ((nextOcc = findNextIndex(newText, (size_t) newTextLength, (size_t) i, word[0])) != -1) {
 			i = nextOcc;
 		}
 	}
@@ -299,7 +299,7 @@ void preProcesssing_Morris_Pratt_algorithm(const char *word, int m, int goodPref
 	
 int Morris_Pratt_algorithm(const char *word, int m, const char *text, int n) {
 	// pre-processing
-	int goodPrefix[strlen(word) + 1];
+	int goodPrefix[m + 1];
 	preProcesssing_Morris_Pratt_algorithm(word, m, goodPrefix);
 	int i = 0, j = 0;
 	int nbOcc = 0;
@@ -335,7 +335,7 @@ void preProcesssing_Knuth_Morris_Pratt_algorithm(const char *word, int m, int be
 }
 	
 int Knuth_Morris_Pratt_algorithm(const char *word, int m, const char *text, int n) {
-	int bestPrefix[strlen(word) + 1];
+	int bestPrefix[m + 1];
 	preProcesssing_Knuth_Morris_Pratt_algorithm(word, m, bestPrefix);
 	int i = 0, j = 0;
 	int nbOcc = 0;
