@@ -23,8 +23,9 @@
 char** lire_mots(const char *fichier_mots, int *nbMots);
 char* lire_texte(const char *fichier_texte);
 
-int ac_matrice(const char **mots, int *nbMots, const char *texte);
-void pre_ac(Trie trie, const char **mots, int k);
+int ac_matrice(const char **mots, size_t *nbMots, const char *texte);
+int pre_ac(Trie trie, const char **mots, int k);
+void complete(Trie trie, int e);
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
@@ -35,57 +36,60 @@ int main(int argc, char *argv[]) {
 	}
 	const char *fichier_mots = "./mots.txt"; // argv[1];
 	const char *fichier_texte = "./texte.txt"; // argv[2];
-	int nbMots = 0;
+	size_t nbMots = 0;
 	const char **mots = (const char **) lire_mots(fichier_mots, &nbMots);
 	const char *texte = (const char *) lire_texte(fichier_texte);
 	ac_matrice(mots, &nbMots, texte);
 	return EXIT_SUCCESS;
 }
 
-int ac_matrice(const char **mots, int *nbMots, const char *texte) {
-	
-	int nbOcc = 0;
+int ac_matrice(const char **mots, size_t *nbMots, const char *texte) {
 	Trie trie = createTrie(100);
 	if (trie == NULL) {
 		exit(EXIT_FAILURE);
 	}
 	printTransition(trie);
-	free(trie);
-	//pre_ac(trie, mots, *nbMots);
-
+	int nbOcc = 0;
+	int e = pre_ac(trie, mots, *nbMots);
+	// for j= 0; < n - 1
 	return nbOcc;
 }
 
-void pre_ac(Trie trie, const char **mots, int k) {
+int pre_ac(Trie trie, const char **mots, int k) {
 	// La fonction entrer(entrer un état) est représenter par insertInTrie
 	// Entrer(X[i], q0)
 	for (int i = 0; i < k; i++) {
 		insertInTrie(trie, (unsigned char *) mots[i]);
 	}
+	int q0 = 0;
 	for (int j = 0; j < CHAR_LENGTH; j++) {
-		if (trie->transition[0][j] != EMPTY_TRANSITION) {
-			trie->transition[0][j] = EMPTY_TRANSITION;
+		if (trie->transition[q0][j] != EMPTY_TRANSITION) {
+			trie->transition[q0][j] = EMPTY_TRANSITION;
 		}
 	}
 	// printTransition(trie);
-	complete(trie);
+	complete(trie, q0);
+	return q0;
 }
 
 // cbbabc
 
-int complete(Trie trie) {
-	
-	// f = file vide
+void complete(Trie trie, int e) {
 	Queue f;
+	int p, r, s;
+	char a;
+	int tailleSup = trie->nextNode - 1;
+	int sup[tailleSup];
 	f = initQueue();
+	for (int i = 0; i < tailleSup; i++) {
+		tailleSup = EMPTY_TRANSITION;
+	}
 	// l = liste des transitions (e, a, p) telles que p != e (e & p = numéro de noeud, a = lettre)
-	int p, r;
-	unsigned char a;
 	List precedent = NULL;
 	List transition = NULL;
 	for (int j = 0; j < CHAR_LENGTH; j++) {
-		if (trie->transition[0][j] != 0) {
-			p = trie->transition[0][j];
+		if (trie->transition[e][j] != EMPTY_TRANSITION) {
+			p = trie->transition[e][j];
 			transition = (List) malloc(sizeof(struct _list));
 			if (transition == NULL) {
 				perror("malloc");
@@ -93,7 +97,7 @@ int complete(Trie trie) {
 			}
 			transition->startNode = e;
 			transition->targetNode = p;
-			a = (unsigned char) j;
+			a = (char) j;
 			transition->letter = a;
 			transition->next = precedent != NULL ? transition : NULL;
 			precedent = transition;
@@ -107,23 +111,25 @@ int complete(Trie trie) {
 		first = l;
 		r = first->startNode;
 		a = first->letter;
-		p = first->endNode;
+		p = first->targetNode;
 		// l = suivant(l)
 		l = l->next;
 		// enfile(f, p)
-		queuePush(queue, p);
+		queuePush(f, p);
 		// sup(p) = e
+		sup[first->targetNode] = e;
 	}
 	// tant que f est non vide faire
 	while (!queueIsEmpty(f)) {
-		r = queuePop(f);
+		r = queueFirst(f);
+		queuePop(f);
 		// l = liste des transitions (r,a,p)
 		// récupère les transitions ayant pour noeud de départ r
 		precedent = NULL;
 		for (int j = 0; j < CHAR_LENGTH; j++) {
-			if (trie->transition[r][j] != 0) {
+			if (trie->transition[r][j] != EMPTY_TRANSITION) {
 				p = trie->transition[r][j];
-				a = (unsigned char) j;
+				a = (char) j;
 				transition = (List) malloc(sizeof(struct _list));
 				if (transition == NULL) {
 					perror("malloc");
@@ -136,24 +142,35 @@ int complete(Trie trie) {
 				precedent = transition;
 			}
 		}
-		l = precendent;
+		l = precedent;
 		// tant que l est non vide faire
 		while (l != NULL) {
 			// (r,a,p) = premier(l)
 			first = l;
 			r = first->startNode;
 			a = first->letter;
-			p = first->endNode;
+			p = first->targetNode;
 			// l = suivant(l)
 			l = l->next;
 			// enfile(f, p)
-			queuePush(queue, p);
+			queuePush(f, p);
 			// s = sup(r)
-			// int s = 
-			// faire la fonction de sup
+			s = sup[r];
+			// tant que &(s,a) est non définie
+			while (trie->transition[s][(int) a] == EMPTY_TRANSITION) {
+				// s = sup(s)
+				s = sup[s];
+			}
+			// sup(p) = &(s,a)
+			sup[p] = trie->transition[s][(int) a];
 		}
 	}
-	return 0;
+
+	// Affecte les suppléants à la matrice de transitions
+	for (int i = 0; i < tailleSup; i++) {
+		// trie->transition
+	}
+
 }
 
 /*
@@ -186,7 +203,6 @@ char ** lire_mots(const char *fichier_mots, int *nbMots) {
 		fprintf(stderr, "Impossible d'ouvrir %s pour lire\n", fichier_mots);
 		exit(EXIT_FAILURE);
 	}
-
 	char **buffer;
 	size_t len_buf;
 	size_t len_strbuf;
