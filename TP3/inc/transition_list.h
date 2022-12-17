@@ -9,5 +9,4 @@ struct _list {
 };
 typedef struct _list *List;
 	
-	
 #endif

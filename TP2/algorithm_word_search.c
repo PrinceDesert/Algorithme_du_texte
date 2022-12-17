@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <algorithm_word_search.h>
+#include <queue.h>
 	
 /**
  * Algorithmes de recherche exacte d’un mot dans un texte

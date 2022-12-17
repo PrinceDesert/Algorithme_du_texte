@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <queue.h>
-	
-	
+
+/*
 int main(void) {
 	
 	Queue queue;
@@ -28,7 +28,7 @@ int main(void) {
 	queueClear(queue);
 	fprintf(stdout, "Queue length : %d\n", queueLength(queue));
 }
-	
+*/
 	
 Queue initQueue() {
 	Queue queue = (Queue) malloc(sizeof(_Queue));

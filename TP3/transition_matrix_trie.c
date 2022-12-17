@@ -5,7 +5,7 @@
 #include <limits.h>
 #include <transition_matrix_trie.h>
 
-
+/*
 int main(void) {
 	int maxNode = 20;
 	Trie trie = createTrie(maxNode);
@@ -27,6 +27,7 @@ int main(void) {
 	freeTrie(trie);
 	return EXIT_SUCCESS;
 }
+*/
 	
 Trie createTrie(int maxNode) {
 	Trie t = (Trie) malloc(sizeof(struct _trie));

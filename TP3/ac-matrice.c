@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <ctype.h>
+#include <assert.h>
 #include <transition_list.h>
 #include <transition_matrix_trie.h>
 #include <queue.h>
@@ -20,11 +21,11 @@
 
 // la fonction sup regarde le plus long suffixe pour trouver l'état où atterir
 	
-char** lire_mots(const char *fichier_mots, int *nbMots);
+char** lire_mots(const char *fichier_mots, size_t *nbMots);
 char* lire_texte(const char *fichier_texte);
 
-int ac_matrice(const char **mots, size_t *nbMots, const char *texte);
-int pre_ac(Trie trie, const char **mots, int k);
+int ac_matrice(const char **mots, size_t nbMots, const char *texte, size_t n);
+int pre_ac(Trie trie, const char **mots, size_t k);
 void complete(Trie trie, int e);
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
@@ -39,35 +40,48 @@ int main(int argc, char *argv[]) {
 	size_t nbMots = 0;
 	const char **mots = (const char **) lire_mots(fichier_mots, &nbMots);
 	const char *texte = (const char *) lire_texte(fichier_texte);
-	ac_matrice(mots, &nbMots, texte);
+	ac_matrice(mots, nbMots, texte, strlen(texte));
 	return EXIT_SUCCESS;
 }
 
-int ac_matrice(const char **mots, size_t *nbMots, const char *texte) {
+int ac_matrice(const char **mots, size_t nbMots, const char *texte, size_t n) {
+	assert(mots != NULL);
+	assert(nbMots >= 1);
+	assert(texte != NULL);
+	assert(n == strlen(texte));
 	Trie trie = createTrie(100);
 	if (trie == NULL) {
 		exit(EXIT_FAILURE);
 	}
-	printTransition(trie);
 	int nbOcc = 0;
-	int e = pre_ac(trie, mots, *nbMots);
+	int e = pre_ac(trie, mots, nbMots);
 	// for j= 0; < n - 1
+	for (size_t j = 0; j < n - 1; j++) {
+		while (trie->transition[e][j] == EMPTY_TRANSITION) {
+			// e = sup[e];
+		}
+		e = trie->transition[e][(int) texte[j]];
+		if (e != EMPTY_TRANSITION) {
+			nbOcc++;
+		}
+	}
 	return nbOcc;
 }
 
-int pre_ac(Trie trie, const char **mots, int k) {
-	// La fonction entrer(entrer un état) est représenter par insertInTrie
-	// Entrer(X[i], q0)
-	for (int i = 0; i < k; i++) {
-		insertInTrie(trie, (unsigned char *) mots[i]);
-	}
+int pre_ac(Trie trie, const char **mots, size_t k) {
 	int q0 = 0;
+	// Initialise la matrice de transtion
 	for (int j = 0; j < CHAR_LENGTH; j++) {
 		if (trie->transition[q0][j] != EMPTY_TRANSITION) {
 			trie->transition[q0][j] = EMPTY_TRANSITION;
 		}
 	}
-	// printTransition(trie);
+	// La fonction entrer(entrer un état) est représenter par insertInTrie
+	// Entrer(X[i], q0)
+	for (size_t i = 0; i < k; i++) {
+		insertInTrie(trie, (unsigned char *) mots[i]);
+	}
+	printTransition(trie);
 	complete(trie, q0);
 	return q0;
 }
@@ -77,7 +91,7 @@ int pre_ac(Trie trie, const char **mots, int k) {
 void complete(Trie trie, int e) {
 	Queue f;
 	int p, r, s;
-	char a;
+	unsigned char a;
 	int tailleSup = trie->nextNode - 1;
 	int sup[tailleSup];
 	f = initQueue();
@@ -97,7 +111,7 @@ void complete(Trie trie, int e) {
 			}
 			transition->startNode = e;
 			transition->targetNode = p;
-			a = (char) j;
+			a = (unsigned char) j;
 			transition->letter = a;
 			transition->next = precedent != NULL ? transition : NULL;
 			precedent = transition;
@@ -129,7 +143,7 @@ void complete(Trie trie, int e) {
 		for (int j = 0; j < CHAR_LENGTH; j++) {
 			if (trie->transition[r][j] != EMPTY_TRANSITION) {
 				p = trie->transition[r][j];
-				a = (char) j;
+				a = (unsigned char) j;
 				transition = (List) malloc(sizeof(struct _list));
 				if (transition == NULL) {
 					perror("malloc");
@@ -196,7 +210,7 @@ int sup(Trie t, int q) {
 }
 */
 
-char ** lire_mots(const char *fichier_mots, int *nbMots) {
+char ** lire_mots(const char *fichier_mots, size_t *nbMots) {
 	FILE *fp;	
 	fp = fopen(fichier_mots, "rb");
 	if (!fp) {
