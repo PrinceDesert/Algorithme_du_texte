@@ -25,8 +25,8 @@ char** lire_mots(const char *fichier_mots, size_t *nbMots);
 char* lire_texte(const char *fichier_texte);
 
 int ac_matrice(const char **mots, size_t nbMots, const char *texte, size_t n);
-int pre_ac(Trie trie, const char **mots, size_t k);
-void complete(Trie trie, int e);
+int pre_ac(Trie trie, const char **mots, size_t k, int *sup, int tailleSup);
+void complete(Trie trie, int e, int *sup, int tailleSup);
 
 #define SUPPLEANT_NON_DEFINIE -1
 
@@ -56,13 +56,18 @@ int ac_matrice(const char **mots, size_t nbMots, const char *texte, size_t n) {
 		exit(EXIT_FAILURE);
 	}
 	int nbOcc = 0;
-	int e = pre_ac(trie, mots, nbMots);
+	int tailleSup = trie->nextNode - 1;
+	int sup[tailleSup];
+	for (int i = 0; i < tailleSup; i++) {
+		sup[i] = SUPPLEANT_NON_DEFINIE;
+	}
+	int e = pre_ac(trie, mots, nbMots, sup, tailleSup);
 	printf("ok\n");
-	return -1;
+	exit(EXIT_FAILURE);
 	// for j= 0; < n - 1
 	for (size_t j = 0; j < n - 1; j++) {
 		while (trie->transition[e][j] == EMPTY_TRANSITION) {
-			// e = sup[e];
+			e = sup[e];
 		}
 		e = trie->transition[e][(int) texte[j]];
 		if (e != EMPTY_TRANSITION) {
@@ -72,7 +77,7 @@ int ac_matrice(const char **mots, size_t nbMots, const char *texte, size_t n) {
 	return nbOcc;
 }
 
-int pre_ac(Trie trie, const char **mots, size_t k) {
+int pre_ac(Trie trie, const char **mots, size_t k, int *sup, int tailleSup) {
 	int q0 = 0;
 	// Initialise la matrice de transtion
 	for (int j = 0; j < CHAR_LENGTH; j++) {
@@ -85,22 +90,17 @@ int pre_ac(Trie trie, const char **mots, size_t k) {
 	for (size_t i = 0; i < k; i++) {
 		insertInTrie(trie, (unsigned char *) mots[i]);
 	}
-	complete(trie, q0);
+	complete(trie, q0, sup, tailleSup);
 	return q0;
 }
 
 // cbbabc
 
-void complete(Trie trie, int e) {
+void complete(Trie trie, int e, int *sup, int tailleSup) {
 	Queue f;
 	int p, r, s;
 	unsigned char a;
-	int tailleSup = trie->nextNode - 1;
-	int sup[tailleSup];
 	f = initQueue();
-	for (int i = 0; i < tailleSup; i++) {
-		sup[i] = SUPPLEANT_NON_DEFINIE;
-	}
 	// l = liste des transitions (e, a, p) telles que p != e (e & p = numéro de noeud, a = lettre)
 	List precedent = NULL;
 	List transition = NULL;
@@ -190,19 +190,17 @@ void complete(Trie trie, int e) {
 			s = sup[r];
 			// tant que &(s,a) est non définie
 			while (trie->transition[s][(int) a] == EMPTY_TRANSITION) {
-				printf("s=%d ", s);
-				printf("sup[s]=%d\n", sup[s]);
 				// s = sup(s)
-				s = sup[s];
+				printf("s:%d\n", s);
+				printf("sup[s]:%d\n", sup[s]);
+				s = sup[s] == SUPPLEANT_NON_DEFINIE ? 0 : sup[s];
 			}
 			// sup(p) = &(s,a)
 			sup[p] = trie->transition[s][(int) a];
 			free(first);
 		}
 	}
-	printf("ok4\n");
-	exit(EXIT_FAILURE);
-
+	
 	// Affecte les suppléants à la matrice de transitions
 	for (int i = 0; i < tailleSup; i++) {
 		// trie->transition
@@ -212,29 +210,6 @@ void complete(Trie trie, int e) {
 	}
 
 }
-
-/*
-int sup(Trie t, int q) {
-	int current = q;
-	// Tant que pas revenu à la racine
-	while (current != 0) {
-		unsigned char parentLetter;
-		int parentNode;
-		// Récupère la lettre
-		for (int i = 0; i < t->maxNode; i++) {	 
-			for (int j = 0; j < CHAR_LENGTH; j++) {
-				if (t->transition[i][j] == current) {
-					parentLetter = (unsigned char) j;
-					parentNode = i;
-					break;
-				}
-			}
-		}
-		// Cherche le plus long suffixe 
-	} 
-	return 0;
-}
-*/
 
 char ** lire_mots(const char *fichier_mots, size_t *nbMots) {
 	FILE *fp;	
