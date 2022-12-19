@@ -2,12 +2,12 @@
 - Installer Make
 - Système d'exploitation Linux
 
-## Compilation
-```make all```
+## Commandes
+```make ac-matrice```
+```./ac-matrice <fichier mot> <fichier texte>```
 
-## Éxecution :
-```./genere-mots```
-```./genere-texte```
+```make ac-hachage```
+```./ac-hachage <fichier mot> <fichier texte>```
 
 ## Nettoyage
 ```make clean```

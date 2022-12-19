@@ -57,6 +57,8 @@ int ac_matrice(const char **mots, size_t nbMots, const char *texte, size_t n) {
 	}
 	int nbOcc = 0;
 	int e = pre_ac(trie, mots, nbMots);
+	printf("ok\n");
+	return -1;
 	// for j= 0; < n - 1
 	for (size_t j = 0; j < n - 1; j++) {
 		while (trie->transition[e][j] == EMPTY_TRANSITION) {
@@ -102,9 +104,10 @@ void complete(Trie trie, int e) {
 	// l = liste des transitions (e, a, p) telles que p != e (e & p = numéro de noeud, a = lettre)
 	List precedent = NULL;
 	List transition = NULL;
+	List first = NULL;
 	for (int j = 0; j < CHAR_LENGTH; j++) {
-		if (trie->transition[e][j] != EMPTY_TRANSITION) {
-			p = trie->transition[e][j];
+		p = trie->transition[e][j];
+		if (trie->transition[e][j] != EMPTY_TRANSITION && e != p) {
 			transition = (List) malloc(sizeof(struct _list));
 			if (transition == NULL) {
 				perror("malloc");
@@ -114,14 +117,21 @@ void complete(Trie trie, int e) {
 			transition->targetNode = p;
 			a = (unsigned char) j;
 			transition->letter = a;
-			transition->next = precedent != NULL ? transition : NULL;
-			precedent = transition;
+			if (precedent == NULL) {
+				first = transition;
+				transition->next = NULL;
+				precedent = transition;
+			} else {
+				precedent->next = transition;
+				precedent = transition;
+			}
 		}
 	}
-	List l = precedent;
-	List first = NULL;
+	// l = first car first=1er élement de la liste : 1er->2eme->3eme->NULL
+	List l = first;
 	// tant que l est non vide faire
 	while (l != NULL) {
+		// printf("l : start:%d, letter:%c, end:%d, nextnull?:%d\n", l->startNode, l->letter, l->targetNode, l->next == NULL);
 		// (r,a,p) = premier(l)
 		first = l;
 		r = first->startNode;
@@ -132,7 +142,8 @@ void complete(Trie trie, int e) {
 		// enfile(f, p)
 		queuePush(f, p);
 		// sup(p) = e
-		sup[first->targetNode] = e;
+		sup[p] = e;
+		free(first);
 	}
 	// tant que f est non vide faire
 	while (!queueIsEmpty(f)) {
@@ -153,8 +164,14 @@ void complete(Trie trie, int e) {
 				transition->startNode = r;
 				transition->letter = a;
 				transition->targetNode = p;
-				transition->next = precedent != NULL ? transition : NULL;
-				precedent = transition;
+				if (precedent == NULL) {
+					first = transition;
+					transition->next = NULL;
+					precedent = transition;
+				} else {
+					precedent->next = transition;
+					precedent = transition;
+				}
 			}
 		}
 		l = precedent;
@@ -173,13 +190,18 @@ void complete(Trie trie, int e) {
 			s = sup[r];
 			// tant que &(s,a) est non définie
 			while (trie->transition[s][(int) a] == EMPTY_TRANSITION) {
+				printf("s=%d ", s);
+				printf("sup[s]=%d\n", sup[s]);
 				// s = sup(s)
 				s = sup[s];
 			}
 			// sup(p) = &(s,a)
 			sup[p] = trie->transition[s][(int) a];
+			free(first);
 		}
 	}
+	printf("ok4\n");
+	exit(EXIT_FAILURE);
 
 	// Affecte les suppléants à la matrice de transitions
 	for (int i = 0; i < tailleSup; i++) {
