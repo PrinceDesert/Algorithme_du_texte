@@ -28,6 +28,8 @@ int ac_matrice(const char **mots, size_t nbMots, const char *texte, size_t n);
 int pre_ac(Trie trie, const char **mots, size_t k);
 void complete(Trie trie, int e);
 
+#define SUPPLEANT_NON_DEFINIE -1
+
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 int main(int argc, char *argv[]) {
@@ -81,7 +83,6 @@ int pre_ac(Trie trie, const char **mots, size_t k) {
 	for (size_t i = 0; i < k; i++) {
 		insertInTrie(trie, (unsigned char *) mots[i]);
 	}
-	printTransition(trie);
 	complete(trie, q0);
 	return q0;
 }
@@ -96,7 +97,7 @@ void complete(Trie trie, int e) {
 	int sup[tailleSup];
 	f = initQueue();
 	for (int i = 0; i < tailleSup; i++) {
-		tailleSup = EMPTY_TRANSITION;
+		sup[i] = SUPPLEANT_NON_DEFINIE;
 	}
 	// l = liste des transitions (e, a, p) telles que p != e (e & p = numéro de noeud, a = lettre)
 	List precedent = NULL;
@@ -183,6 +184,9 @@ void complete(Trie trie, int e) {
 	// Affecte les suppléants à la matrice de transitions
 	for (int i = 0; i < tailleSup; i++) {
 		// trie->transition
+		if (sup[i] != SUPPLEANT_NON_DEFINIE) {
+			// trie->transition[i][j] = sup[i];
+		}
 	}
 
 }

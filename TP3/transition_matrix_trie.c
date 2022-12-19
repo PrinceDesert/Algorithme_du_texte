@@ -80,7 +80,7 @@ void insertInTrie(Trie trie, unsigned char *w) {
 	while (i < trie->maxNode && w[idxW] != '\0') {
 		for (int j = 0; j < CHAR_LENGTH; j++) {
 			if (j == w[idxW]) {
-				if (trie->transition[i][j] != EMPTY_TRANSITION) {
+				if (trie->transition[i][j] == EMPTY_TRANSITION) {
 					trie->transition[i][j] = trie->nextNode++;
 				}
 				i = trie->transition[i][j] != EMPTY_TRANSITION ? trie->transition[i][j] : FIRST_STATE;
@@ -91,7 +91,6 @@ void insertInTrie(Trie trie, unsigned char *w) {
 	}
 	trie->finite[trie->nextNode - 1] = '1';
 }
-	
 	
 int isInTrie(Trie trie, unsigned char *w) {
 	int i = 0;
