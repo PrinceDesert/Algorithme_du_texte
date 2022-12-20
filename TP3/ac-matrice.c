@@ -28,7 +28,7 @@ int ac_matrice(const char **mots, size_t nbMots, const char *texte, size_t n);
 int pre_ac(Trie trie, const char **mots, size_t k, int *sup, int tailleSup);
 void complete(Trie trie, int e, int *sup, int tailleSup);
 
-#define SUPPLEANT_NON_DEFINIE -1
+#define SUPPLEANT_NON_DEFINIE 0
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
@@ -56,24 +56,39 @@ int ac_matrice(const char **mots, size_t nbMots, const char *texte, size_t n) {
 		exit(EXIT_FAILURE);
 	}
 	int nbOcc = 0;
-	int tailleSup = trie->nextNode - 1;
+	int tailleSup = trie->maxNode + 1;
 	int sup[tailleSup];
 	for (int i = 0; i < tailleSup; i++) {
 		sup[i] = SUPPLEANT_NON_DEFINIE;
 	}
 	int e = pre_ac(trie, mots, nbMots, sup, tailleSup);
-	printf("ok\n");
-	exit(EXIT_FAILURE);
+	printf("pre ac - e = %d\n", e);
+	for (int i = 0; i < tailleSup; i++) {
+		printf("sup[%d] = %d\n", i, sup[i]);
+	}
+	printf("finite: ");
+	for (int i = 0; i < CHAR_LENGTH; i++) {
+		if (trie->finite[i] == '1') {
+			printf("%d ", i);
+		}
+	}
+	printf("\n");
+	printf("taille du texte : %lu\n", n);
 	// for j= 0; < n - 1
 	for (size_t j = 0; j < n - 1; j++) {
-		while (trie->transition[e][j] == EMPTY_TRANSITION) {
+		printf("trie->transition[%d][%d=%c] = %d\n", e, (int) texte[j], texte[j], trie->transition[e][(int) texte[j]]);
+		while (trie->transition[e][(int) texte[j]] == EMPTY_TRANSITION) {
+			printf("e = %d\n", e);
 			e = sup[e];
+			printf("e = %d (sup[e])\n", e);
 		}
 		e = trie->transition[e][(int) texte[j]];
-		if (e != EMPTY_TRANSITION) {
+		if (trie->finite[e] == '1') {
+			printf("Une occurence pour le mot lu(regarder les dernières lettres)\n");
 			nbOcc++;
 		}
 	}
+	printf("nbOcc : %d\n", nbOcc);
 	return nbOcc;
 }
 
@@ -191,8 +206,6 @@ void complete(Trie trie, int e, int *sup, int tailleSup) {
 			// tant que &(s,a) est non définie
 			while (trie->transition[s][(int) a] == EMPTY_TRANSITION) {
 				// s = sup(s)
-				printf("s:%d\n", s);
-				printf("sup[s]:%d\n", sup[s]);
 				s = sup[s] == SUPPLEANT_NON_DEFINIE ? 0 : sup[s];
 			}
 			// sup(p) = &(s,a)
@@ -200,15 +213,6 @@ void complete(Trie trie, int e, int *sup, int tailleSup) {
 			free(first);
 		}
 	}
-	
-	// Affecte les suppléants à la matrice de transitions
-	for (int i = 0; i < tailleSup; i++) {
-		// trie->transition
-		if (sup[i] != SUPPLEANT_NON_DEFINIE) {
-			// trie->transition[i][j] = sup[i];
-		}
-	}
-
 }
 
 char ** lire_mots(const char *fichier_mots, size_t *nbMots) {
