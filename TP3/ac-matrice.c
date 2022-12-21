@@ -27,6 +27,7 @@ char* lire_texte(const char *fichier_texte);
 int ac_matrice(const char **mots, size_t nbMots, const char *texte, size_t n);
 int pre_ac(Trie trie, const char **mots, size_t k, int *sup, int tailleSup);
 void complete(Trie trie, int e, int *sup, int tailleSup);
+List liste_transitions(Trie trie, int e, int verification);
 
 #define SUPPLEANT_NON_DEFINIE 0
 
@@ -37,8 +38,8 @@ int main(int argc, char *argv[]) {
 		printf("Usage : %s <fichier mot> <fichier texte>\n", argv[0]);
 		return EXIT_FAILURE;
 	}
-	const char *fichier_mots = "./mots.txt"; // argv[1];
-	const char *fichier_texte = "./texte.txt"; // argv[2];
+	const char *fichier_mots = argv[1]; // "./mots.txt"
+	const char *fichier_texte = argv[2]; // "./texte.txt"
 	size_t nbMots = 0;
 	const char **mots = (const char **) lire_mots(fichier_mots, &nbMots);
 	const char *texte = (const char *) lire_texte(fichier_texte);
@@ -105,6 +106,13 @@ int pre_ac(Trie trie, const char **mots, size_t k, int *sup, int tailleSup) {
 	for (size_t i = 0; i < k; i++) {
 		insertInTrie(trie, (unsigned char *) mots[i]);
 	}
+	
+	for (size_t i = 0; i < CHAR_LENGTH; i++) {
+		if (trie->transition[0][i] == EMPTY_TRANSITION) {
+			// &(s,a) = q0
+			trie->transition[0][i] = 0;
+		}
+	}
 	complete(trie, q0, sup, tailleSup);
 	return q0;
 }
@@ -115,35 +123,10 @@ void complete(Trie trie, int e, int *sup, int tailleSup) {
 	Queue f;
 	int p, r, s;
 	unsigned char a;
-	f = initQueue();
-	// l = liste des transitions (e, a, p) telles que p != e (e & p = numéro de noeud, a = lettre)
-	List precedent = NULL;
-	List transition = NULL;
-	List first = NULL;
-	for (int j = 0; j < CHAR_LENGTH; j++) {
-		p = trie->transition[e][j];
-		if (trie->transition[e][j] != EMPTY_TRANSITION && e != p) {
-			transition = (List) malloc(sizeof(struct _list));
-			if (transition == NULL) {
-				perror("malloc");
-				exit(EXIT_FAILURE);
-			}
-			transition->startNode = e;
-			transition->targetNode = p;
-			a = (unsigned char) j;
-			transition->letter = a;
-			if (precedent == NULL) {
-				first = transition;
-				transition->next = NULL;
-				precedent = transition;
-			} else {
-				precedent->next = transition;
-				precedent = transition;
-			}
-		}
-	}
+	List first;
 	// l = first car first=1er élement de la liste : 1er->2eme->3eme->NULL
-	List l = first;
+	List l = liste_transitions(trie, e, 1);
+	f = initQueue();
 	// tant que l est non vide faire
 	while (l != NULL) {
 		// printf("l : start:%d, letter:%c, end:%d, nextnull?:%d\n", l->startNode, l->letter, l->targetNode, l->next == NULL);
@@ -166,30 +149,7 @@ void complete(Trie trie, int e, int *sup, int tailleSup) {
 		queuePop(f);
 		// l = liste des transitions (r,a,p)
 		// récupère les transitions ayant pour noeud de départ r
-		precedent = NULL;
-		for (int j = 0; j < CHAR_LENGTH; j++) {
-			if (trie->transition[r][j] != EMPTY_TRANSITION) {
-				p = trie->transition[r][j];
-				a = (unsigned char) j;
-				transition = (List) malloc(sizeof(struct _list));
-				if (transition == NULL) {
-					perror("malloc");
-					exit(EXIT_FAILURE);
-				}
-				transition->startNode = r;
-				transition->letter = a;
-				transition->targetNode = p;
-				if (precedent == NULL) {
-					first = transition;
-					transition->next = NULL;
-					precedent = transition;
-				} else {
-					precedent->next = transition;
-					precedent = transition;
-				}
-			}
-		}
-		l = precedent;
+		l = liste_transitions(trie, r, 0);
 		// tant que l est non vide faire
 		while (l != NULL) {
 			// (r,a,p) = premier(l)
@@ -205,6 +165,7 @@ void complete(Trie trie, int e, int *sup, int tailleSup) {
 			s = sup[r];
 			// tant que &(s,a) est non définie
 			while (trie->transition[s][(int) a] == EMPTY_TRANSITION) {
+				// printf("trie->transition[%d][%d] = %d\n", s, (int) a, trie->transition[s][(int) a]);
 				// s = sup(s)
 				s = sup[s] == SUPPLEANT_NON_DEFINIE ? 0 : sup[s];
 			}
@@ -213,6 +174,37 @@ void complete(Trie trie, int e, int *sup, int tailleSup) {
 			free(first);
 		}
 	}
+}
+
+// l = liste des transitions (e, a, p) telles que p != e (e & p = numéro de noeud, a = lettre)
+List liste_transitions(Trie trie, int e, int verification) {
+	int p, test;
+	unsigned char a;
+	List transition = NULL, first = NULL, precedent = NULL;
+	for (int j = 0; j < CHAR_LENGTH; j++) {
+		p = trie->transition[e][j];
+		test = !verification ? 1 : e != p;
+		if (trie->transition[e][j] != EMPTY_TRANSITION && test) {
+			transition = (List) malloc(sizeof(struct _list));
+			if (transition == NULL) {
+				perror("malloc");
+				exit(EXIT_FAILURE);
+			}
+			transition->startNode = e;
+			transition->targetNode = p;
+			a = (unsigned char) j;
+			transition->letter = a;
+			if (precedent == NULL) {
+				first = transition;
+				transition->next = NULL;
+				precedent = transition;
+			} else {
+				precedent->next = transition;
+				precedent = transition;
+			}
+		}
+	}
+	return first;
 }
 
 char ** lire_mots(const char *fichier_mots, size_t *nbMots) {
