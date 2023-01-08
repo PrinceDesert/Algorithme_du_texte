@@ -93,6 +93,24 @@ int ac_matrice(const char **mots, size_t nbMots, const char *texte, size_t n) {
 	return nbOcc;
 }
 
+void find_substrings(int node, char *result, int result_len) {
+  if (node != root) { // si le noeud courant n'est pas la racine, ajouter le caractère courant au résultat
+    result[result_len] = child[node][c];
+    result[result_len + 1] = '\0';
+    printf("Found substring: %s\n", result);
+	  if (isInTrie(trie, result) {
+	    trie->finite[node] = '1';	  
+	  }
+  }
+  // parcourir récursivement tous les fils du noeud courant
+  for (int c = 0; c < MAX_CHARS; c++) {
+    int child = child[node][c];
+    if (child) {
+      find_substrings(child, result, result_len + 1);
+    }
+  }
+}
+
 int pre_ac(Trie trie, const char **mots, size_t k, int *sup, int tailleSup) {
 	int q0 = 0;
 	// Initialise la matrice de transtion
