@@ -16,4 +16,7 @@ Trie createTrie(int maxNode);
 void insertInTrie(Trie trie, unsigned char *w);
 int isInTrie(Trie trie, unsigned char *w);
 	
+#include <limits.h>
+#define CHAR_LENGTH UCHAR_MAX + 1
+	
 #endif

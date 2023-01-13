@@ -9,7 +9,6 @@
 #include <transition_matrix_trie.h>
 #include <queue.h>
 	
-	
 char ** lire_mots(const char *fichier_mots, size_t *nbMots, size_t *maxNode, int *alphabet, int alphabetLength);
 char* lire_texte(const char *fichier_texte);
 	
@@ -87,6 +86,7 @@ int ac_matrice(const char **mots, size_t nbMots, size_t maxNode, const char *tex
 	printf("%d\n", nbOcc);
 	return nbOcc;
 }
+
 /*
 void find_substrings(Trie trie, int node, char *result, int result_len, int *nbOcc) {
 	result[result_len] = '\0';

@@ -4,22 +4,13 @@
 #include <limits.h>
 #include <hash_table_trie.h>
 	
-	
-// hash : niveau espace mémoire c'est plus économique mais temps recherche plus long
-// trouver une fonction hachage performante pour génèrer une clé pour le couple
-// il peut avoir des conflits qui correspondent à 2 tables
-
-
-// appeler le hash pour le keyHash dans insert, isintrie
-// vérifier 0.75
-
 int hash(int startNode, unsigned char letter, int maxNode);
 List searchSameLink(List linkToFind);
 List searchLink(List link, unsigned char letter, int startNode);
 Trie prefix(unsigned char *w); // les préfixes du mot w
 Trie suffix(unsigned char *w); // les suffixes du mot w
 // Trie factor(unsigned char *w); // les facteurs du mot w
-#define LENGTH_ASCII_CHARS UCHAR_MAX + 1
+#define CHAR_LENGTH UCHAR_MAX + 1
 	
 Trie createTrie(int maxNode) {
 	Trie t = (Trie) malloc(sizeof(struct _trie));
@@ -56,7 +47,7 @@ void insertInTrie(Trie trie, unsigned char *w) {
 	List list = NULL;
 	int startNode = 0; // pour le hash, pour le prochain maillon
 	while (i < (size_t) trie->maxNode && w[idxW] != '\0') {
-		for (size_t j = 0; j < LENGTH_ASCII_CHARS; j++) {
+		for (size_t j = 0; j < CHAR_LENGTH; j++) {
 			if (j == w[idxW]) {
 				keyHash = hash(startNode, (unsigned char) w[idxW], trie->maxNode);
 				printf("Génération du hash : (%d,%c)=%d\n", (int) i, w[idxW], keyHash);
