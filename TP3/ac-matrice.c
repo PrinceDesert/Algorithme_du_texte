@@ -44,7 +44,7 @@ int ac_matrice(const char **mots, size_t nbMots, size_t maxNode, const char *tex
 	assert(nbMots >= 1);
 	assert(texte != NULL);
 	assert(n == strlen(texte));
-	printf("Nombre de noeuds max : %lu\n", maxNode);
+	// printf("Nombre de noeuds max : %lu\n", maxNode);
 	Trie trie = createTrie((int) maxNode);
 	if (trie == NULL) {
 		exit(EXIT_FAILURE);
@@ -56,6 +56,7 @@ int ac_matrice(const char **mots, size_t nbMots, size_t maxNode, const char *tex
 		sup[i] = SUPPLEANT_NON_DEFINIE;
 	}
 	int e = pre_ac(trie, mots, nbMots, sup);
+	/*
 	printf("pre ac - e = %d\n", e);
 	for (int i = 0; i < tailleSup; i++) {
 		printf("sup[%d] = %d\n", i, sup[i]);
@@ -69,26 +70,39 @@ int ac_matrice(const char **mots, size_t nbMots, size_t maxNode, const char *tex
 	}
 	printf("\n");
 	printf("taille du texte : %lu\n", n);
+	*/
 	for (size_t j = 0; j <= n - 1; j++) {
-		printf("trie->transition[%d][%d=%c] = %d\n", e, (int) texte[j], texte[j], trie->transition[e][(int) texte[j]]);
+		// printf("trie->transition[%d][%d=%c] = %d\n", e, (int) texte[j], texte[j], trie->transition[e][(int) texte[j]]);
 		while (trie->transition[e][(int) texte[j]] == EMPTY_TRANSITION) {
-			printf("e = %d\n", e);
+			// printf("e = %d\n", e);
 			e = sup[e];
-			printf("e = %d (sup[e])\n", e);
+			// printf("e = %d (sup[e])\n", e);
 		}
 		e = trie->transition[e][(int) texte[j]];
-		/*if (e != EMPTY_TRANSITION) {
-			nbOcc++;
-		} */
 		if (trie->finite[e] == '1') {
-			printf("Une occurence pour le mot lu(regarder les dernières lettres)\n");
 			nbOcc++;
+			// printf("occurence %d\n", nbOcc);
 		}
 	}
-	printf("nbOcc : %d\n", nbOcc);
+	printf("%d\n", nbOcc);
 	return nbOcc;
 }
-
+/*
+void find_substrings(Trie trie, int node, char *result, int result_len, int *nbOcc) {
+	result[result_len] = '\0';
+	if (isInTrie(trie, (unsigned char *) result)) {
+		(*nbOcc)++;
+		printf("occurrence sous chaine (nbOcc=%d): %s\n", *nbOcc, result);
+	}
+	for (int i = 0; i < CHAR_LENGTH; i++) {
+		if (trie->transition[node][i] != EMPTY_TRANSITION) {
+			result[result_len] = (char) i;
+			//printf("i: %d, i:%c, x : %s\n", i, (char) i, result);
+			find_substrings(trie, trie->transition[node][i], result, result_len + 1, nbOcc);
+		}
+	}
+}
+*/
 
 int pre_ac(Trie trie, const char **mots, size_t k, int *sup) {
 	int q0 = 0;
@@ -101,7 +115,7 @@ int pre_ac(Trie trie, const char **mots, size_t k, int *sup) {
 	// La fonction entrer(entrer un état) est représenter par insertInTrie
 	// Entrer(X[i], q0)
 	for (size_t i = 0; i < k; i++) {
-		printf("insertion de %s\n", mots[i]);
+		// printf("insertion de %s\n", mots[i]);
 		insertInTrie(trie, (unsigned char *) mots[i]);
 	}
 	
