@@ -89,6 +89,7 @@ int ac_matrice(const char **mots, size_t nbMots, size_t maxNode, const char *tex
 	return nbOcc;
 }
 
+
 int pre_ac(Trie trie, const char **mots, size_t k, int *sup) {
 	int q0 = 0;
 	// Initialise la matrice de transtion
