@@ -2,7 +2,8 @@ SHELL = /bin/sh
 CC = gcc
 # -Werror
 CFLAGS = -std=c99 -Wpedantic -Wall    -Wextra -Wconversion -Wwrite-strings  -fstack-protector-all -fpie -D_FORTIFY_SOURCE=2 -O2 -D_XOPEN_SOURCE -g
-EXE = ac-matrice transition ac-hachage
+EXE = ac-matrice transition 
+#ac-hachage
 
 %.o : %.c
 	$(CC) -c $(wildcard *.c) $(CFLAGS) -I inc

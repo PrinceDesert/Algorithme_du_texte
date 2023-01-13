@@ -6,21 +6,21 @@
 #include <ctype.h>
 #include <assert.h>
 #include <transition_list.h>
-#include <transition_matrix_trie.h>
+#include <hash_table_trie.h>
 #include <queue.h>
 	
-	
-char ** lire_mots(const char *fichier_mots, size_t *nbMots, size_t *maxNode, int *alphabet, int alphabetLength);
+char** lire_mots(const char *fichier_mots, size_t *nbMots);
 char* lire_texte(const char *fichier_texte);
-	
-int ac_matrice(const char **mots, size_t nbMots, size_t maxNode, const char *texte, size_t n);
+
+int ac_matrice(const char **mots, size_t nbMots, const char *texte, size_t n);
 int pre_ac(Trie trie, const char **mots, size_t k, int *sup);
 void complete(Trie trie, int e, int *sup);
 List liste_transitions(Trie trie, int e, int verification);
-	
+
 #define SUPPLEANT_NON_DEFINIE 0
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
-	
+#define MAX_NODE 100
+
 int main(int argc, char *argv[]) {
 	if (argc != 3) {
 		printf("Usage : %s <fichier mot> <fichier texte>\n", argv[0]);
@@ -29,23 +29,18 @@ int main(int argc, char *argv[]) {
 	const char *fichier_mots = argv[1]; // "./mots.txt"
 	const char *fichier_texte = argv[2]; // "./texte.txt"
 	size_t nbMots = 0;
-	size_t maxNode = 0;
-	int alphabet[CHAR_LENGTH];
-	memset(alphabet, 0, sizeof(alphabet));
-	
-	const char **mots = (const char **) lire_mots(fichier_mots, &nbMots, &maxNode, alphabet, CHAR_LENGTH);
+	const char **mots = (const char **) lire_mots(fichier_mots, &nbMots);
 	const char *texte = (const char *) lire_texte(fichier_texte);
-	ac_matrice(mots, nbMots, maxNode, texte, strlen(texte));
+	ac_matrice(mots, nbMots, texte, strlen(texte));
 	return EXIT_SUCCESS;
 }
 
-int ac_matrice(const char **mots, size_t nbMots, size_t maxNode, const char *texte, size_t n) {
+int ac_matrice(const char **mots, size_t nbMots, const char *texte, size_t n) {
 	assert(mots != NULL);
 	assert(nbMots >= 1);
 	assert(texte != NULL);
 	assert(n == strlen(texte));
-	printf("Nombre de noeuds max : %lu\n", maxNode);
-	Trie trie = createTrie((int) maxNode);
+	Trie trie = createTrie(MAX_NODE);
 	if (trie == NULL) {
 		exit(EXIT_FAILURE);
 	}
@@ -77,13 +72,14 @@ int ac_matrice(const char **mots, size_t nbMots, size_t maxNode, const char *tex
 			printf("e = %d (sup[e])\n", e);
 		}
 		e = trie->transition[e][(int) texte[j]];
-		/*if (e != EMPTY_TRANSITION) {
+		
+		if (e != EMPTY_TRANSITION) {
 			nbOcc++;
-		} */
-		if (trie->finite[e] == '1') {
+		} 
+		/*if (trie->finite[e] == '1') {
 			printf("Une occurence pour le mot lu(regarder les dernières lettres)\n");
 			nbOcc++;
-		}
+		}*/
 	}
 	printf("nbOcc : %d\n", nbOcc);
 	return nbOcc;
@@ -201,8 +197,8 @@ List liste_transitions(Trie trie, int e, int verification) {
 	}
 	return first;
 }
-	
-char ** lire_mots(const char *fichier_mots, size_t *nbMots, size_t *maxNode, int *alphabet, int alphabetLength) {
+
+char ** lire_mots(const char *fichier_mots, size_t *nbMots) {
 	FILE *fp;	
 	fp = fopen(fichier_mots, "rb");
 	if (!fp) {
@@ -217,8 +213,10 @@ char ** lire_mots(const char *fichier_mots, size_t *nbMots, size_t *maxNode, int
 	int i = 0;
 	buffer = (char **) malloc(len_buf);
 	if (buffer == NULL) { perror("malloc"); exit(EXIT_FAILURE); }
+
 	int size_line = 256;
 	char line[size_line];
+
 	while (!feof(fp)) {
 		if (fgets(line, ARRAY_SIZE(line), fp) == NULL) {
 			if (ferror(fp)) {
@@ -232,19 +230,11 @@ char ** lire_mots(const char *fichier_mots, size_t *nbMots, size_t *maxNode, int
 		if (buffer[i] == NULL) { perror("malloc"); exit(EXIT_FAILURE); }
 		bytes = snprintf(buffer[i], len_strbuf, "%s", line);
 		if (bytes < 0 ||  bytes >= (int) len_strbuf) { perror("snprintf"); exit(EXIT_FAILURE); }
-		for (int j = 0; j < (int) len_strbuf; j++)
-			for (int c = 0; c < alphabetLength; c++)
-				if ((char) c == buffer[i][j] && !alphabet[(int) c] && c != '\0')
-					alphabet[c] = 1;
 		memset(line, '\0', sizeof(line));
 		i++;
 		(*nbMots)++;
 	}
-	size_t nbLettres = 0;
-	for (int c = 0; c < alphabetLength; c++)
-		if (alphabet[(int) c] == 1)
-			nbLettres++;
-	*maxNode = ((*nbMots) * nbLettres) + 1;
+
 	if (fclose(fp) != 0) {
 		fprintf(stderr, "Impossible de fermer %s\n", fichier_mots);
 		exit(EXIT_FAILURE);
