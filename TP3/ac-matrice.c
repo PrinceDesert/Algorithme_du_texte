@@ -243,17 +243,19 @@ char ** lire_mots(const char *fichier_mots, size_t *nbMots, size_t *maxNode, int
 		}
 		line[strcspn(line, "\n")] = '\0';
 		len_strbuf = (strlen(line) + 1) * sizeof(char);
-		buffer[i] = malloc(len_strbuf);
-		if (buffer[i] == NULL) { perror("malloc"); exit(EXIT_FAILURE); }
-		bytes = snprintf(buffer[i], len_strbuf, "%s", line);
-		if (bytes < 0 ||  bytes >= (int) len_strbuf) { perror("snprintf"); exit(EXIT_FAILURE); }
-		for (int j = 0; j < (int) len_strbuf; j++)
-			for (int c = 0; c < alphabetLength; c++)
-				if ((char) c == buffer[i][j] && !alphabet[(int) c] && c != '\0')
-					alphabet[c] = 1;
-		memset(line, '\0', sizeof(line));
-		i++;
-		(*nbMots)++;
+		if (strlen(line) > 0) {
+			buffer[i] = malloc(len_strbuf);
+			if (buffer[i] == NULL) { perror("malloc"); exit(EXIT_FAILURE); }
+			bytes = snprintf(buffer[i], len_strbuf, "%s", line);
+			if (bytes < 0 ||  bytes >= (int) len_strbuf) { perror("snprintf"); exit(EXIT_FAILURE); }
+			for (int j = 0; j < (int) len_strbuf; j++)
+				for (int c = 0; c < alphabetLength; c++)
+					if ((char) c == buffer[i][j] && !alphabet[(int) c] && c != '\0')
+						alphabet[c] = 1;
+			memset(line, '\0', sizeof(line));
+			i++;
+			(*nbMots)++;
+		}
 	}
 	size_t nbLettres = 0;
 	for (int c = 0; c < alphabetLength; c++)
