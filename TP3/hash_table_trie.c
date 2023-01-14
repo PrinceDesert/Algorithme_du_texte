@@ -4,13 +4,6 @@
 #include <limits.h>
 #include <hash_table_trie.h>
 	
-int hash(int startNode, unsigned char letter, int maxNode);
-List searchSameLink(List linkToFind);
-List searchLink(List link, unsigned char letter, int startNode);
-Trie prefix(unsigned char *w); // les préfixes du mot w
-Trie suffix(unsigned char *w); // les suffixes du mot w
-// Trie factor(unsigned char *w); // les facteurs du mot w
-#define CHAR_LENGTH UCHAR_MAX + 1
 	
 Trie createTrie(int maxNode) {
 	Trie t = (Trie) malloc(sizeof(struct _trie));
@@ -27,6 +20,9 @@ Trie createTrie(int maxNode) {
 		perror("malloc");
 		free(t->transition);
 		return NULL;
+	}
+	for (int i = 0; i < maxNode; i++) {
+		t->transition[i] = NULL;
 	}
 	// +1 : '\0'
 	size_t lenFinite = (size_t) t->maxNode + 1;
@@ -50,7 +46,7 @@ void insertInTrie(Trie trie, unsigned char *w) {
 		for (size_t j = 0; j < CHAR_LENGTH; j++) {
 			if (j == w[idxW]) {
 				keyHash = hash(startNode, (unsigned char) w[idxW], trie->maxNode);
-				printf("Génération du hash : (%d,%c)=%d\n", (int) i, w[idxW], keyHash);
+				// printf("Génération du hash : (%d,%c)=%d\n", (int) i, w[idxW], keyHash);
 				list = (List) malloc(sizeof(struct _list));
 				if (list == NULL) {
 					perror("malloc");
@@ -66,15 +62,18 @@ void insertInTrie(Trie trie, unsigned char *w) {
 				list->startNode = startNode;
 				list->targetNode = trie->nextNode;
 				list->letter = (unsigned char) j;
+				// printf("|%d| => [%d,%c,%d]\n", keyHash, list->startNode, list->letter, list->targetNode);
 				/**
 				 * Vérification s'il n'y a un couple identique déja inséré à cet emplacement (keyHash) 
 				*/
 				if (searchSameLink(list) == NULL) {
 					// affecte en tête
 					trie->transition[keyHash] = list;
+					/*
 					printf("Pair : (%d,%c)=%d, adding link to %d => (%d,%c,%d)\n", 
 						(int) i, w[idxW], keyHash, keyHash,
 						list->startNode, list->letter, list->targetNode);
+					*/
 					// maillon suivant
 					trie->nextNode++;		
 					startNode = list->targetNode;
@@ -121,10 +120,10 @@ int isInTrie(Trie trie, unsigned char *w) {
 		// récupère le maillon en tête
 		list = trie->transition[keyHash];
 		// recherche à partir de ce maillon, le maillon correspondant à la lettre mais je sais pas si il faut aussi le startNode
-		printf("searchLink (%d,%c)=%d\n", startNode, w[idxW], keyHash);
-		List x = searchLink(list, w[idxW], startNode);
+		// printf("searchLink (%d,%c)=%d\n", startNode, w[idxW], keyHash);
+		List x = searchLink(list, startNode, w[idxW]);
 		if (x == NULL) {
-			printf("Link not found for (%d,%c)=%d\n", startNode, w[idxW], keyHash);  
+			// printf("Link not found for (%d,%c)=%d\n", startNode, w[idxW], keyHash);  
 			return 0;
 		}
 		startNode = x->targetNode;
@@ -137,7 +136,7 @@ int isInTrie(Trie trie, unsigned char *w) {
 /**
  * retourne le maillon correspondant à la lettre et au startNode
 */
-List searchLink(List link, unsigned char letter, int startNode) {
+List searchLink(List link, int startNode, unsigned char letter) {
 	List current = link;
 	while (current != NULL) {
 		if (current->letter == letter 
@@ -147,6 +146,20 @@ List searchLink(List link, unsigned char letter, int startNode) {
 		current = current->next;
 	}
 	return NULL;
+}
+
+/**
+ * ajoute le maillon link au dernière élement de first
+*/
+void appendLink(List first, List link) {
+	if (first == NULL || link == NULL) return;
+	List tmp = first;
+	List last = tmp;
+	while (tmp != NULL) {
+		last = tmp;
+		tmp = tmp->next;
+	}
+	last->next = link;
 }
 
 void freeTrie(Trie t) {
@@ -229,7 +242,7 @@ Trie suffix(unsigned char *w) {
 	}
 	return t;	
 }
-
+/*
 int main(void) {
 	int maxNode = 20;
 	Trie trie = createTrie(maxNode);
@@ -266,3 +279,4 @@ int main(void) {
 	freeTrie(trie);
 	return EXIT_SUCCESS;
 }
+*/

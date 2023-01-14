@@ -32,9 +32,9 @@ int main(int argc, char *argv[]) {
 	int alphabet[CHAR_LENGTH];
 	memset(alphabet, 0, sizeof(alphabet));
 	
-	const char **mots = (const char **) lire_mots(fichier_mots, &nbMots, &maxNode, alphabet, CHAR_LENGTH);
+	const char **mots = (const char **) lire_mots(fichier_mots, &nbMots, &maxNode , alphabet, CHAR_LENGTH);
 	const char *texte = (const char *) lire_texte(fichier_texte);
-	ac_matrice(mots, nbMots, maxNode, texte, strlen(texte));
+	ac_matrice(mots, nbMots, maxNode * maxNode, texte, strlen(texte));
 	return EXIT_SUCCESS;
 }
 
@@ -115,14 +115,14 @@ int pre_ac(Trie trie, const char **mots, size_t k, int *sup) {
 	// La fonction entrer(entrer un état) est représenter par insertInTrie
 	// Entrer(X[i], q0)
 	for (size_t i = 0; i < k; i++) {
-		// printf("insertion de %s\n", mots[i]);
 		insertInTrie(trie, (unsigned char *) mots[i]);
+		// printf("insertion de %s\n", mots[i]);
 	}
 	
 	for (size_t i = 0; i < CHAR_LENGTH; i++) {
-		if (trie->transition[0][i] == EMPTY_TRANSITION) {
+		if (trie->transition[q0][i] == EMPTY_TRANSITION) {
 			// &(s,a) = q0
-			trie->transition[0][i] = q0;
+			trie->transition[q0][i] = q0;
 		}
 	}
 	complete(trie, q0, sup);

@@ -3,7 +3,6 @@
 #include <string.h>
 	
 #define FILENAME "text_generator"
-#define SEPARATOR " "
 	
 char ** genere_mots(size_t nb_mot, size_t min_taille_mot, size_t max_taille_mot, size_t taille_alphabet);
 	
@@ -23,8 +22,7 @@ char ** genere_mots(size_t nb_mot, size_t min_taille_mot, size_t max_taille_mot,
 	size_t i = 0;
 	size_t j = 0;
 	size_t rand_length_word = 0;
-	const char *separator = SEPARATOR;
-	char word[max_taille_mot + strlen(separator) + 1];
+	char word[max_taille_mot];
 	char **buffer;
 	size_t len_buf;
 	size_t len_strbuf;
@@ -38,8 +36,7 @@ char ** genere_mots(size_t nb_mot, size_t min_taille_mot, size_t max_taille_mot,
 			word[j] = (char) ((size_t) rand() % ((max_alphabet + 1) - min_alphabet) + min_alphabet);
 			j++;
 		}
-		fprintf(stdout, "%s", word);
-		fprintf(stdout, "%s", separator);
+		fprintf(stdout, "%s\n", word);
 		len_strbuf = (strlen(word) + 1) * sizeof(char);
 		buffer[i] = malloc(len_buf);
 		if (buffer[i] == NULL) { perror("malloc"); exit(EXIT_FAILURE); }
@@ -48,7 +45,6 @@ char ** genere_mots(size_t nb_mot, size_t min_taille_mot, size_t max_taille_mot,
 		j = 0;
 		i++;
 	}
-	fprintf(stdout, "\n");
 	return buffer;
 }
 	
